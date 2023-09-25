@@ -226,18 +226,14 @@ export default class APIBuilder<RequestData = any, ResponseData = any> {
   async execute(): Promise<AxiosResponse<ResponseData>> {
     this.validateRequestComponents();
 
-    try {
-      return await axios({
-        method: this.method,
-        url: `${this.baseUrl}${this.resource}`,
-        data: this.data,
-        headers: this.headers,
-        params: this.queryParams,
-        responseType: this.responseType,
-      });
-    } catch (error) {
-      throw error;
-    }
+    return await axios({
+      method: this.method,
+      url: `${this.baseUrl}${this.resource}`,
+      data: this.data,
+      headers: this.headers,
+      params: this.queryParams,
+      responseType: this.responseType,
+    });
   }
 
   /**
