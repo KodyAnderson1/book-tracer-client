@@ -102,7 +102,7 @@ function BookRecommendationCard() {
         className="object-cover"
         src="http://books.google.com/books/content?id=9oxPEAAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api"
       />
-      <CardFooter className="absolute bottom-0 z-10 justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+      <CardFooter className="absolute -bottom-1 z-10 justify-between opacity-0 group-hover:opacity-100 transition-opacity">
         <Button className="text-tiny w-full" color="primary" radius="full" size="sm">
           Add To Library
         </Button>
@@ -204,7 +204,7 @@ function BookCard({ book }: { book: BookSearchResult }) {
                   </div>
                   <div className="flex flex-col w-full ml-2 h-full">
                     <div className="flex-grow w-full h-1/2">
-                      <div className=" ml-3 flex justify-between items-center mt-2">
+                      <div className=" ml-2 flex justify-between items-center mt-2">
                         <span className="text-lg font-bold">Description</span>
                         <div className="flex gap-4 mr-3">
                           <Link
@@ -223,7 +223,7 @@ function BookCard({ book }: { book: BookSearchResult }) {
                           </Link>
                         </div>
                       </div>
-                      <ScrollShadow className="mt-2 px-2 h-3/4">
+                      <ScrollShadow className="text-sm my-2 px-2 h-[80%]">
                         {book.volumeInfo.description || "No Description Found"}
                       </ScrollShadow>
                     </div>
