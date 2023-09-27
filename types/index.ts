@@ -7,18 +7,15 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 export type EndpointFunctionsClient = {
   ROOT: () => string;
   BOOK_SEARCH: () => string;
-  SINGLE: (id: number | string) => string;
+  SAVE_BOOK: () => string;
   LOGIN: (id: number | string) => string;
-
-  // ... Add other endpoints as needed
 };
 
 export const API_SERVICE: EndpointFunctionsClient = {
   ROOT: () => "/",
   BOOK_SEARCH: () => `/search`,
-  SINGLE: (id) => `/users/${id}`,
+  SAVE_BOOK: () => `/users/library`,
   LOGIN: (id) => `/login/${id}`,
-  // ... Add other endpoints as needed
 };
 
 export type EndpointFunctionsServer = {
@@ -27,12 +24,14 @@ export type EndpointFunctionsServer = {
   SINGLE: (id: number | string) => string;
   LOGIN: (id: number | string) => string;
   SAVE_BOOK: () => string;
+  REMOVE_BOOK: () => string;
 };
 
 export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
   ROOT: () => "/",
   BOOK_SEARCH: () => `/book/search`,
   SAVE_BOOK: () => `/users/library`,
+  REMOVE_BOOK: () => `/users/library`,
   SINGLE: (id) => `/users/${id}`,
   LOGIN: (id) => `/login/${id}`,
 };

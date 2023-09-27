@@ -27,12 +27,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {/* Other head content can also go here */}
+      </head>
       <body className={clsx("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex flex-col h-screen">
             <Navbar />
-            <main className=" mx-10 pt-20 flex-grow">{children}</main>
+            <main className="md:mx-40 pt-20 flex-grow">{children}</main>
             <footer className="w-full flex items-center justify-center py-3">Footer Things</footer>
           </div>
         </Providers>

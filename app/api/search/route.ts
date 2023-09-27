@@ -2,22 +2,26 @@ import APIBuilder from "@/lib/server/APIBuilder";
 import { APIErrorHandler, ErrorResponse } from "@/lib/server/APIErrorHandler";
 import { AGGREGATE_SERVICE } from "@/types";
 import { BookSearchResult } from "@/types/BookSearch";
-
-import { SaveBook, SaveBookResponse } from "@/types/UserServiceTypes";
 import { NextRequest, NextResponse } from "next/server";
 
 const SERVICE = process.env.AGGREGATE_SERVICE;
 
-// TODO: Add a grab to get query params from the api url
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const query = searchParams.get("q");
+
   if (!SERVICE) {
     return NextResponse.error();
+  }
+
+  if (!query) {
+    return NextResponse.json({});
   }
 
   let results = await new APIBuilder<any, BookSearchResult[] | ErrorResponse>(SERVICE)
     .get()
     .setEndpoint(AGGREGATE_SERVICE.BOOK_SEARCH)
-    // .setQueryParameters({ q: "harry potter" })
+    .setQueryParameters({ term: query })
     .execute();
 
   const errorHandler = new APIErrorHandler(results);

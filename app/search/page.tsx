@@ -1,28 +1,31 @@
 "use client";
 
 import { subtitle, title } from "@/components/primitives";
-import { Button } from "@nextui-org/button";
-import { Card, CardFooter } from "@nextui-org/card";
-import { Image } from "@nextui-org/image";
-import { Link } from "@nextui-org/link";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-} from "@nextui-org/modal";
-import { Divider } from "@nextui-org/divider";
 import { useEffect, useState } from "react";
 import APIBuilder from "@/lib/client/APIBuilder";
 import { BookSearchResult } from "@/types/BookSearch";
 import { API_SERVICE } from "@/types";
-import { ScrollShadow } from "@nextui-org/react";
-import { PlusIcon } from "@/components/icons";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { BookRecommendationCard } from "@/components/BookRecommendationCard";
+import {
+  Divider,
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
+import { Link } from "@nextui-org/link";
+import AddToLibraryButton from "@/components/AddToLibraryButton";
+import { BookCard } from "@/components/BookCard";
+import { BookSearchModal } from "@/components/SearchResultsModal";
 
 /**
  * TODO: Going to need to make an individual call to each book to get the description
+ *
+ * For "Other Books you might like" have it be an object that gets the top 5 highest rated books from same return
  *
  * Components:
  * - Add To Library Button
@@ -30,54 +33,129 @@ import { PlusIcon } from "@/components/icons";
  *	  - Have it say "Remove From Library" if it exists in a user's library already
  */
 export default function Home() {
+  const router = useRouter();
+  const routeSearchParams = useSearchParams();
+
   const [books, setBooks] = useState<BookSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(null);
+
   useEffect(() => {
+    setLoading(true);
     getBooks().then((res) => {
-      setBooks(res);
+      if (res === undefined || Object.keys(res).length === 0) {
+        setLoading(false);
+        return;
+      }
+
+      setBooks(
+        res.sort((a, b) => {
+          const hasThumbnailA =
+            a.volumeInfo.imageLinks?.smallThumbnail || a.volumeInfo.imageLinks?.thumbnail ? 1 : 0;
+          const hasThumbnailB =
+            b.volumeInfo.imageLinks?.smallThumbnail || b.volumeInfo.imageLinks?.thumbnail ? 1 : 0;
+
+          const ratingsCountA = a.volumeInfo.ratingsCount ?? 0;
+          const ratingsCountB = b.volumeInfo.ratingsCount ?? 0;
+
+          const ratingA = a.volumeInfo.averageRating ?? 0;
+          const ratingB = b.volumeInfo.averageRating ?? 0;
+
+          if (hasThumbnailB !== hasThumbnailA) {
+            return hasThumbnailB - hasThumbnailA;
+          }
+          if (ratingsCountB !== ratingsCountA) {
+            return ratingsCountB - ratingsCountA;
+          }
+
+          return ratingB - ratingA;
+        })
+      );
+      router.refresh();
     });
-  }, []);
+    setLoading(false);
+  }, [routeSearchParams]);
 
   async function getBooks() {
     return (
       await new APIBuilder<any, BookSearchResult[]>("/api")
+        .get()
         .setEndpoint(API_SERVICE.BOOK_SEARCH)
+        .setQueryParameters({ q: routeSearchParams.get("q") ?? "" })
         .execute()
     ).data;
   }
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  if (loading) {
+    return (
+      <section className="gap-4 py-8 md:py-10">
+        <header className="mb-8">
+          <h1 className={title({ className: "text-secondary" })}>Search Results</h1>
+          <h2 className={subtitle({ className: "text-secondary" })}>
+            Results for {routeSearchParams.get("q") ?? ""}
+          </h2>
+        </header>
+        <div className="flex flex-col items-center justify-center ">
+          <div className="inline-block max-w-lg text-center justify-center">
+            <h1 className={title({ className: "capitalize" })}>Loading...</h1>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (books.length === 0) {
+    return (
+      <section className="gap-4 py-8 md:py-10">
+        <div className="flex flex-col items-center justify-center ">
+          <div className="inline-block max-w-lg text-center justify-center">
+            <h1 className={title({ className: "capitalize" })}>No Results Found</h1>
+            <br />
+            <h4 className={title({ className: "capitalize mt-6", size: "sm" })}>
+              Search for a book!
+            </h4>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="flex flex-col">
-      <header className="mb-8">
-        <h1 className={title({ className: "text-secondary" })}>Search Results</h1>
-        <h2 className={subtitle({ className: "text-secondary" })}>Results for {"Harry Potter"}</h2>
+    <section className="flex flex-col px-4 md:px-0">
+      <header className="mb-4 md:mb-8">
+        <h1 className={title({ className: "text-background-foreground", size: "md" })}>
+          Results <span className="font-semibold">for {routeSearchParams.get("q") ?? ""}</span>
+        </h1>
       </header>
 
-      <div className="flex flex-col md:flex-row justify-start gap-4">
-        {/* Main Content: Book List */}
+      <div className="flex flex-col md:flex-row gap-4">
         <main className="flex-1 flex flex-col gap-4">
           <h3 className="font-semibold text-lg">Books</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4">
-            {/* Loop over BookCard 12 times */}
-            {books.map((book) => {
-              return <BookCard book={book} key={book.id} />;
-            })}
-            {/* {Array.from({ length: 12 }, (_, i) => (
-              <BookCard key={i} />
-            ))} */}
+          <div className="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-4">
+            {books.map((book) => (
+              <BookCard
+                key={book.id}
+                book={book}
+                setSelectedBook={setSelectedBook}
+                setIsModalOpen={setIsModalOpen}
+              />
+            ))}
           </div>
         </main>
 
         <aside className="md:w-1/3 2xl:w-1/6 md:ml-4 h-[80vh] flex flex-col">
-          {/* Filters */}
           <div className="flex flex-col gap-4 h-1/4 justify-center items-center">
             <div className="border-1 border-secondary h-[82%] w-[75%]">
               <h3 className="flex justify-center font-semibold text-lg mt-3">Filters</h3>
             </div>
           </div>
 
-          {/* Recommendations */}
           <div className="flex flex-col gap-4 flex-grow justify-center items-center">
             <div className="border-1 border-secondary h-[82%] w-[75%]">
               <h3 className="flex justify-center font-semibold text-lg mt-3">
@@ -87,174 +165,9 @@ export default function Home() {
           </div>
         </aside>
       </div>
+      {selectedBook && (
+        <BookSearchModal isOpen={isModalOpen} onOpenChange={handleCloseModal} book={selectedBook} />
+      )}
     </section>
-  );
-}
-
-function BookRecommendationCard() {
-  return (
-    <Card
-      className="relative group hover:bg-gray-100 transition w-[7rem] h-[10rem]"
-      isPressable
-      onPress={() => console.log("Other Books Like This Click...")}>
-      <Image
-        alt="Card background"
-        className="object-cover"
-        src="http://books.google.com/books/content?id=9oxPEAAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api"
-      />
-      <CardFooter className="absolute -bottom-1 z-10 justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button className="text-tiny w-full" color="primary" radius="full" size="sm">
-          Add To Library
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-}
-
-function BookCard({ book }: { book: BookSearchResult }) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  return (
-    <>
-      <Card
-        className="h-[300px] relative group hover:bg-gray-100 transition"
-        isPressable
-        onPress={onOpen}>
-        <Image
-          removeWrapper
-          alt="Card background"
-          className="z-0 w-full h-full object-cover"
-          src={book.volumeInfo.imageLinks?.thumbnail || "https://via.placeholder.com/150"}
-        />
-        <CardFooter className="absolute bottom-0 z-10 justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button className="text-tiny w-full" color="primary" radius="full" size="sm">
-            Add To Library
-          </Button>
-        </CardFooter>
-      </Card>
-      <Modal
-        backdrop="blur"
-        size={"5xl"}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        className="bg-background">
-        <ModalContent className="h-[41rem]">
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                <h2 className="text-2xl text-secondary">
-                  {book.volumeInfo.title || "No Title Found"}
-                </h2>
-                {/* Author Names and Genres */}
-                <div className="flex flex-row gap-2 justify-between w-[98%]">
-                  <div className="flex flex-col justify-between ">
-                    <h3 className="text-sm">
-                      {book.volumeInfo.authors?.join("&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;") ||
-                        "No Author Found"}
-                    </h3>
-                    <h3 className="text-sm">
-                      {book.volumeInfo.categories?.join("&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;") ||
-                        "No Genre Found"}
-                    </h3>
-                  </div>
-                  {/* ISBN 10 && ISBN 13 */}
-                  <div className="flex flex-col justify-between ">
-                    <h3 className="text-sm">
-                      ISBN-10:{" "}
-                      {book.volumeInfo.industryIdentifiers?.find((i) => i.type === "ISBN_10")
-                        ?.identifier || "Not Available"}
-                    </h3>
-                    <h3 className="text-sm">
-                      ISBN-13:{" "}
-                      {book.volumeInfo.industryIdentifiers?.find((i) => i.type === "ISBN_13")
-                        ?.identifier || "Not Available"}
-                    </h3>
-                  </div>
-                </div>
-                <Divider className="mt-2 -mb-4 bg-slate-500" />
-              </ModalHeader>
-              <ModalBody>
-                <div className="flex w-full h-full">
-                  <div className="w-[40%] h-full flex flex-col">
-                    <Image
-                      src={
-                        book.volumeInfo.imageLinks?.thumbnail || "https://via.placeholder.com/150"
-                      }
-                      alt="Placeholder"
-                      width={400}
-                    />
-                    <div className="flex justify-between pt-2 -mb-4">
-                      <div className="flex flex-col">
-                        <div className="text-sm text-right font-semibold">Page Count</div>
-                        <div className="text-right font-bold">{book.volumeInfo.pageCount}</div>
-                      </div>
-                      <Divider orientation="vertical" className="-mx-2" />
-                      <div className="flex flex-col">
-                        <div className="text-sm text-right font-semibold">Avg Rating</div>
-                        <div className="text-right font-bold">
-                          {book.volumeInfo.averageRating}/5
-                        </div>
-                      </div>
-                      <Divider orientation="vertical" className="-mx-2" />
-                      <div className="flex flex-col">
-                        <div className="text-sm text-right font-semibold">Ratings</div>
-                        <div className="text-right font-bold">{book.volumeInfo.ratingsCount}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col w-full ml-2 h-full">
-                    <div className="flex-grow w-full h-1/2">
-                      <div className=" ml-2 flex justify-between items-center mt-2">
-                        <span className="text-lg font-bold">Description</span>
-                        <div className="flex gap-4 mr-3">
-                          <Link
-                            target="_blank"
-                            href={`https://www.amazon.com/s?k=${encodeURIComponent(
-                              book.volumeInfo.title
-                            )}`}
-                            className="text-blue-500">
-                            Amazon
-                          </Link>
-                          <Link
-                            target="_blank"
-                            href={book.volumeInfo.infoLink || "https://www.google.com"}
-                            className="text-blue-500">
-                            Google Books
-                          </Link>
-                        </div>
-                      </div>
-                      <ScrollShadow className="text-sm my-2 px-2 h-[80%]">
-                        {book.volumeInfo.description || "No Description Found"}
-                      </ScrollShadow>
-                    </div>
-                    <Divider className="bg-slate-500 mb-4 mt-4" />
-                    <div className="flex-grow w-full h-1/2">
-                      <div className="ml-3 -mt-2 mb-2">
-                        <span className="text-lg font-bold">Other Books Like This</span>
-                      </div>
-                      <div className="flex flex-row gap-5 justify-center">
-                        {Array.from({ length: 5 }, (_, i) => (
-                          <BookRecommendationCard key={i} />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </ModalBody>
-
-              <ModalFooter>
-                <Button
-                  startContent={<PlusIcon />}
-                  color="primary"
-                  onPress={onClose}
-                  className="w-full">
-                  Add To Library
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
   );
 }
