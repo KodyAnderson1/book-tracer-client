@@ -1,7 +1,7 @@
 export interface SaveBook {
   clerkId: string;
-  isbn_10: string;
-  isbn_13: string;
+  isbn_10: string | null;
+  isbn_13: string | null;
 }
 
 export interface SaveBookResponse {

@@ -1,3 +1,5 @@
+"use client";
+
 import NextLink from "next/link";
 import { title, subtitle } from "@/components/primitives";
 import { SearchIcon } from "@/components/icons";

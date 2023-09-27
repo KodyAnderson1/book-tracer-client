@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -18,20 +20,41 @@ import clsx from "clsx";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import { GithubIcon, SearchIcon } from "@/components/icons";
+import { useRouter } from "next/navigation";
 
 import { Logo } from "@/components/icons";
+import { useState } from "react";
 
 export const Navbar = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearchChange = (e: string) => {
+    setSearchQuery(e);
+  };
+
+  const handleClick = () => {
+    router.push(`/search?q=${searchQuery}`);
+  };
+
   const searchInput = (
     <Input
       aria-label="Search"
+      value={searchQuery}
+      onValueChange={(e) => handleSearchChange(e)}
       classNames={{
         inputWrapper: "bg-background",
         input: "text-sm, text-black",
       }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          handleClick();
+        }
+      }}
       endContent={
         <Kbd
           className="hidden lg:inline-block bg-secondary text-white cursor-pointer"
+          onClick={handleClick}
           keys={["command"]}>
           K
         </Kbd>
