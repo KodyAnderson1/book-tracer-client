@@ -6,7 +6,6 @@ import { MinusIcon, PlusIcon } from "./icons";
 import APIBuilder from "@/lib/client/APIBuilder";
 import { API_SERVICE } from "@/types";
 import { SaveBook } from "@/types/UserServiceTypes";
-import { toast } from "react-toastify";
 import { customToast } from "@/lib/client/utils";
 
 interface Props {

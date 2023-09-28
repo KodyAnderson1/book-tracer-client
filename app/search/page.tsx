@@ -7,30 +7,11 @@ import { BookSearchResult } from "@/types/BookSearch";
 import { API_SERVICE } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { BookRecommendationCard } from "@/components/BookRecommendationCard";
-import {
-  Divider,
-  Image,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@nextui-org/react";
-import { Link } from "@nextui-org/link";
-import AddToLibraryButton from "@/components/AddToLibraryButton";
 import { BookCard } from "@/components/BookCard";
 import { BookSearchModal } from "@/components/SearchResultsModal";
 
 /**
  * TODO: Going to need to make an individual call to each book to get the description
- *
- * For "Other Books you might like" have it be an object that gets the top 5 highest rated books from same return
- *
- * Components:
- * - Add To Library Button
- *    - Have className passable-in to style
- *	  - Have it say "Remove From Library" if it exists in a user's library already
  */
 export default function Home() {
   const router = useRouter();
