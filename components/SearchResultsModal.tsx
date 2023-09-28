@@ -74,7 +74,7 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
                   src={book.volumeInfo.imageLinks?.thumbnail}
                   alt="Book Image"
                   fallbackSrc="https://via.placeholder.com/150"
-                  width={300}
+                  width={200}
                   className="hidden md:block"
                   // height={300}
                 />
