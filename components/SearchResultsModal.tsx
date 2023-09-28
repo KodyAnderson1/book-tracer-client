@@ -29,12 +29,13 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
 
   return (
     <Modal
+      placement="center"
       backdrop="blur"
       size={"5xl"}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       className="bg-background">
-      <ModalContent className="text-background-foreground md:h-auto lg:h-[44rem] bg-background-card border border-background-foreground rounded-lg shadow-lg">
+      <ModalContent className="text-background-foreground h-[70%] md:h-auto lg:h-[44rem] bg-background-card border border-background-foreground rounded-lg shadow-lg">
         {(onOpenChange) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
@@ -44,7 +45,7 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
               <div className="flex flex-row gap-2 justify-between w-full">
                 <div className="flex flex-col justify-between">
                   <h3 className="text-base text-background-foreground">
-                    {book.volumeInfo.authors?.join(", ") || "No Author Found"}
+                    {book.volumeInfo.authors?.join(" | ") || "No Author Found"}
                   </h3>
                   <h3 className="text-sm text-background-foreground">
                     {book.volumeInfo.categories?.join(", ") || "No Genre Found"}
@@ -68,16 +69,17 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
 
             <ModalBody className="mt-3 flex flex-col lg:flex-row w-full">
               {/* Left side with book details and image */}
-              <div className="w-full md:w-[40%] flex flex-col items-center p-4">
+              <div className="w-full md:w-[40%] flex flex-col items-center md:p-4">
                 <Image
                   src={book.volumeInfo.imageLinks?.thumbnail}
                   alt="Book Image"
                   fallbackSrc="https://via.placeholder.com/150"
-                  width={200}
+                  width={300}
+                  className="hidden md:block"
                   // height={300}
                 />
 
-                <div className="flex justify-between pt-3 w-full">
+                <div className="flex justify-between md:pt-3 w-full ">
                   <div className="flex flex-col items-center">
                     <span className="text-xs text-background-foreground font-semibold">
                       Page Count
@@ -102,7 +104,7 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
               </div>
 
               {/* Right side with description */}
-              <div className="flex flex-col w-full pr-4 h-[30rem]">
+              <div className="flex flex-col w-full md:pr-4 h-[10rem] md:h-[30rem]">
                 <div className="flex-grow w-full">
                   <div className="flex justify-between items-start">
                     <span className="text-lg font-bold text-background-foreground mb-2">
@@ -123,22 +125,22 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
                       </Link>
                     </div>
                   </div>
-                  {/* Fixed height for description */}
-                  <div className="text-sm my-2 h-[10rem] overflow-auto">
+
+                  <div className="text-sm md:my-2 h-[10rem] md:h-[13rem] overflow-y-auto">
                     {book.volumeInfo.description || "No Description Found"}
                   </div>
                 </div>
 
-                <Divider className="bg-background-foreground mb-3 mt-4" />
+                <Divider className="hidden md:flex md:bg-background-foreground md:mb-3" />
 
-                <div className="flex-grow w-full">
+                <div className="hidden md:block md:flex-grow md:w-full">
                   <div className="mb-2">
                     <span className="text-lg font-bold text-background-foreground">
                       Other Books Like This
                     </span>
                   </div>
-                  {/* Fixed height for "Other Books Like This" */}
-                  <div className="flex flex-row gap-5 justify-center h-[10rem]">
+
+                  <div className="hidden md:flex md:flex-row md:gap-5 md:justify-center md:h-[10rem]">
                     {Array.from({ length: 5 }, (_, i) => (
                       <BookRecommendationCard key={i} />
                     ))}
@@ -147,7 +149,7 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
               </div>
             </ModalBody>
 
-            <ModalFooter className="p-4">
+            <ModalFooter className="px-4">
               <AddToLibraryButton isbn10={isbn10} isbn13={isbn13} bookId={book.id} />
             </ModalFooter>
           </>

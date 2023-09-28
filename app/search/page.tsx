@@ -129,15 +129,21 @@ export default function Home() {
   return (
     <section className="flex flex-col px-4 md:px-0">
       <header className="mb-4 md:mb-8">
-        <h1 className={title({ className: "text-background-foreground", size: "md" })}>
-          Results <span className="font-semibold">for {routeSearchParams.get("q") ?? ""}</span>
+        <h1 className={title({ className: "text-background-foreground", size: "sm" })}>
+          Results for {routeSearchParams.get("q") ?? ""}
         </h1>
       </header>
 
-      <div className="flex flex-col md:flex-row gap-4">
-        <main className="flex-1 flex flex-col gap-4">
-          <h3 className="font-semibold text-lg">Books</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-5 gap-4">
+        {/* Filters section */}
+        {/* <div className="border-1 border-secondary p-4 rounded mb-4 md:mb-0 md:col-span-4">
+          <h3 className="text-center font-semibold text-lg mb-4">Filters</h3>
+        </div> */}
+
+        {/* Books section */}
+        <main className="flex-1 mb-4 md:mb-0 md:col-span-4 md:row-span-5">
+          <h2 className="hidden">Books</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {books.map((book) => (
               <BookCard
                 key={book.id}
@@ -149,22 +155,43 @@ export default function Home() {
           </div>
         </main>
 
-        <aside className="md:w-1/3 2xl:w-1/6 md:ml-4 h-[80vh] flex flex-col">
-          <div className="flex flex-col gap-4 h-1/4 justify-center items-center">
-            <div className="border-1 border-secondary h-[82%] w-[75%]">
-              <h3 className="flex justify-center font-semibold text-lg mt-3">Filters</h3>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4 flex-grow justify-center items-center">
-            <div className="border-1 border-secondary h-[82%] w-[75%]">
-              <h3 className="flex justify-center font-semibold text-lg mt-3">
-                You might also like...
-              </h3>
-            </div>
+        {/* You might also like section */}
+        <aside className="sticky top-20 h-[40rem] border-1 border-secondary p-4 rounded md:col-start-5 md:row-span-5">
+          <h3 className="text-center font-semibold text-lg mb-4">You might also like...</h3>
+          <div className="flex flex-col gap-4 justify-center">
+            {/* {Array.from({ length: 3 }, (_, i) => (
+              <BookRecommendationCard key={i} />
+            ))} */}
           </div>
         </aside>
       </div>
+
+      {/* <div className="md:grid md:grid-cols-3 md:grid-rows-1 md:gap-4">
+        <div className="border-1 border-secondary p-4 rounded mb-4 md:mb-0 md:col-span-2 md:row-span-1">
+          <h3 className="text-center font-semibold text-lg mb-4">Filters</h3>
+        </div>
+
+        <aside className="md:w-full md:col-start-3 md:row-span-2">
+          <div className="border-1 border-secondary p-4 rounded">
+            <h3 className="text-center font-semibold text-lg mb-4">You might also like...</h3>
+          </div>
+        </aside>
+
+        <main className="flex-1 md:col-span-2 md:row-span-1">
+          <h2 className="hidden">Books</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            {books.map((book) => (
+              <BookCard
+                key={book.id}
+                book={book}
+                setSelectedBook={setSelectedBook}
+                setIsModalOpen={setIsModalOpen}
+              />
+            ))}
+          </div>
+        </main>
+      </div> */}
+
       {selectedBook && (
         <BookSearchModal isOpen={isModalOpen} onOpenChange={handleCloseModal} book={selectedBook} />
       )}
