@@ -6,7 +6,6 @@ import { MinusIcon, PlusIcon } from "./icons";
 import APIBuilder from "@/lib/client/APIBuilder";
 import { API_SERVICE } from "@/types";
 import { SaveBook } from "@/types/UserServiceTypes";
-import { toast } from "react-toastify";
 import { customToast } from "@/lib/client/utils";
 
 interface Props {
@@ -57,7 +56,7 @@ const RemoveButton = ({ isbn10, isbn13, bookId }: Props) => {
       color="danger"
       fullWidth
       onClick={() => handleRemoveFromLibrary(bookId)}
-      className="text-white w-full py-2 rounded h-8 flex justify-center items-center hover:bg-pink">
+      className="text-white py-2 rounded h-8 flex justify-center items-center hover:bg-pink">
       Remove from Library
     </Button>
   );

@@ -33,7 +33,7 @@ export function BookCard({ book, setSelectedBook, setIsModalOpen }: Props) {
               {book.volumeInfo.title}
             </h2>
             <p className="text-sm text-opacity-80 text-background-foreground font-medium">
-              {book.volumeInfo.authors}
+              {book.volumeInfo.authors?.join(" | ") || "No Author Found"}
             </p>
             <p className="text-xs text-opacity-60 text-background-foreground">
               {book.volumeInfo.categories}

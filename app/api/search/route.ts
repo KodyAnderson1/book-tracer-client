@@ -1,8 +1,12 @@
+import { EXAMPLE } from "@/lib/client/EXAMPLES";
 import APIBuilder from "@/lib/server/APIBuilder";
 import { APIErrorHandler, ErrorResponse } from "@/lib/server/APIErrorHandler";
 import { AGGREGATE_SERVICE } from "@/types";
 import { BookSearchResult } from "@/types/BookSearch";
 import { NextRequest, NextResponse } from "next/server";
+
+import fs from "fs";
+import path from "path";
 
 const SERVICE = process.env.AGGREGATE_SERVICE;
 
@@ -33,5 +37,6 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json(results.data);
+  // return NextResponse.json(EXAMPLE);
   //   return NextResponse.json({ hello: "world" });
 }

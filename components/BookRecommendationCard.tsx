@@ -11,11 +11,11 @@ export function BookRecommendationCard() {
       <Image
         alt="Card background"
         className="object-cover"
-        src="http://books.google.com/books/content?id=9oxPEAAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api"
+        src="https://books.google.com/books/content?id=1PgKPuFIz1kC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
       />
       <CardFooter className="absolute -bottom-1 z-10 justify-between opacity-0 group-hover:opacity-100 transition-opacity">
         <Button className="text-tiny w-full" color="primary" radius="full" size="sm">
-          Add To Library
+          BUILDING...
         </Button>
       </CardFooter>
     </Card>

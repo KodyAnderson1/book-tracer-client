@@ -44,7 +44,7 @@ export const Navbar = () => {
       onValueChange={(e) => handleSearchChange(e)}
       classNames={{
         inputWrapper: "bg-background",
-        input: "text-sm, text-black",
+        input: "text-sm text-background-foreground",
       }}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
