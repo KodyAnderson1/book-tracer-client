@@ -6,12 +6,13 @@ import { BookSearchResult } from "@/types/BookSearch";
 import { NextRequest, NextResponse } from "next/server";
 
 const SERVICE = process.env.AGGREGATE_SERVICE;
+const TOKEN = process.env.TEMP_JWT;
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const query = searchParams.get("q");
 
-  if (!SERVICE) {
+  if (!SERVICE || !TOKEN) {
     return NextResponse.error();
   }
 
@@ -21,6 +22,7 @@ export async function GET(req: NextRequest) {
 
   let results = await new APIBuilder<any, BookSearchResult[] | ErrorResponse>(SERVICE)
     .get()
+    .setToken(TOKEN)
     .setEndpoint(AGGREGATE_SERVICE.BOOK_SEARCH)
     .setQueryParameters({ term: query })
     .execute();

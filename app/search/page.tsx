@@ -54,9 +54,9 @@ export default function Home() {
           return ratingB - ratingA;
         })
       );
+      setLoading(false);
       router.refresh();
     });
-    setLoading(false);
   }, [routeSearchParams]);
 
   async function getBooks() {

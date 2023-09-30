@@ -6,9 +6,37 @@ import { SaveBook, SaveBookResponse } from "@/types/UserServiceTypes";
 import { NextRequest, NextResponse } from "next/server";
 
 const SERVICE = process.env.AGGREGATE_SERVICE;
+const TOKEN = process.env.TEMP_JWT;
+
+export async function GET() {
+  if (!SERVICE || !TOKEN) {
+    return NextResponse.error();
+  }
+
+  //   const { getToken } = auth();
+  //   const jwt = await getToken({ template: "Default_JWT" });
+
+  let results = await new APIBuilder<SaveBook, SaveBookResponse | ErrorResponse>(SERVICE)
+    .get()
+    .setToken(TOKEN)
+    .setEndpoint(AGGREGATE_SERVICE.GET_BOOK)
+    .execute();
+
+  const errorHandler = new APIErrorHandler(results);
+  const error = errorHandler.handle();
+
+  if (error) {
+    console.log("Error saving book:", error);
+    return NextResponse.error();
+  }
+
+  console.log("SUCCESS GETTING book:", results.data);
+  return NextResponse.json(results.data);
+  // return NextResponse.json({ hello: "world" });
+}
 
 export async function POST(req: NextRequest) {
-  if (!SERVICE) {
+  if (!SERVICE || !TOKEN) {
     return NextResponse.error();
   }
 
@@ -23,6 +51,7 @@ export async function POST(req: NextRequest) {
 
   let results = await new APIBuilder<SaveBook, SaveBookResponse | ErrorResponse>(SERVICE)
     .post(body)
+    .setToken(TOKEN)
     .setEndpoint(AGGREGATE_SERVICE.SAVE_BOOK)
     .execute();
 
@@ -42,13 +71,7 @@ export async function DELETE(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const bookId = searchParams.get("book_id");
 
-  if (!SERVICE) {
-    return NextResponse.error();
-  }
-
-  const clerkId = "98765";
-
-  if (!bookId || !clerkId) {
+  if (!bookId || !SERVICE || !TOKEN) {
     return NextResponse.error();
   }
 
@@ -57,8 +80,9 @@ export async function DELETE(req: NextRequest) {
 
   let results = await new APIBuilder(SERVICE)
     .delete()
+    .setToken(TOKEN)
     .setEndpoint(AGGREGATE_SERVICE.REMOVE_BOOK)
-    .setQueryParameters({ clerk_id: clerkId, book_id: bookId })
+    .setQueryParameters({ book_id: bookId })
     .execute();
 
   const errorHandler = new APIErrorHandler(results);
