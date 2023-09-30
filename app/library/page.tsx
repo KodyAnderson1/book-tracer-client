@@ -130,7 +130,6 @@ export default function Home() {
       .setEndpoint(API_SERVICE.GET_BOOKS)
       .execute()
       .then((res) => {
-        // console.log("🚀 ~ file: page.tsx:38 ~ .then ~ res:", res);
         setBooks(transformToLibraryBooks(res.data));
         setLoading(false);
       })
