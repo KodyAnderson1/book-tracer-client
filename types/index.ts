@@ -8,6 +8,7 @@ export type EndpointFunctionsClient = {
   ROOT: () => string;
   BOOK_SEARCH: () => string;
   SAVE_BOOK: () => string;
+  GET_BOOKS: () => string;
   LOGIN: (id: number | string) => string;
 };
 
@@ -15,6 +16,7 @@ export const API_SERVICE: EndpointFunctionsClient = {
   ROOT: () => "/",
   BOOK_SEARCH: () => `/search`,
   SAVE_BOOK: () => `/users/library`,
+  GET_BOOKS: () => `/users/library`,
   LOGIN: (id) => `/login/${id}`,
 };
 
