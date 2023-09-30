@@ -25,6 +25,7 @@ export type EndpointFunctionsServer = {
   LOGIN: (id: number | string) => string;
   SAVE_BOOK: () => string;
   REMOVE_BOOK: () => string;
+  GET_BOOK: () => string;
 };
 
 export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
@@ -32,6 +33,7 @@ export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
   BOOK_SEARCH: () => `/book/search`,
   SAVE_BOOK: () => `/users/library`,
   REMOVE_BOOK: () => `/users/library`,
+  GET_BOOK: () => `/users/library`,
   SINGLE: (id) => `/users/${id}`,
   LOGIN: (id) => `/login/${id}`,
 };
