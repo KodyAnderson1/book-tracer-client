@@ -16,7 +16,7 @@ export async function GET() {
   let results = await new APIBuilder<any, BookSearchResult[] | ErrorResponse>(SERVICE)
     .get()
     .setToken(TOKEN)
-    // .setEndpoint(AGGREGATE_SERVICE.BOOK_SEARCH)
+    .setEndpoint(AGGREGATE_SERVICE.FRIENDS_CURR_READING)
     .execute();
 
   const errorHandler = new APIErrorHandler(results);
