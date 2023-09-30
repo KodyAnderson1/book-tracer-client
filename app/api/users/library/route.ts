@@ -30,7 +30,6 @@ export async function GET() {
     return NextResponse.error();
   }
 
-  console.log("SUCCESS GETTING book:", results.data);
   return NextResponse.json(results.data);
   // return NextResponse.json({ hello: "world" });
 }

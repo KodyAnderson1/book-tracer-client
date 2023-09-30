@@ -7,6 +7,12 @@ export interface BookSearchResult {
   searchInfo: searchInfo;
 }
 
+export interface LibraryBooks extends BookSearchResult {
+  reading_status: string;
+  last_page_read: number;
+  last_reading_update: string;
+}
+
 interface searchInfo {
   textSnippet: string;
 }
