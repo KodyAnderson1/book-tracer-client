@@ -1,6 +1,5 @@
 import { Button } from "@nextui-org/button";
-import { Card, CardFooter } from "@nextui-org/card";
-import { Image } from "@nextui-org/image";
+import { Card, CardFooter, Image } from "@nextui-org/react";
 
 export function BookRecommendationCard() {
   return (

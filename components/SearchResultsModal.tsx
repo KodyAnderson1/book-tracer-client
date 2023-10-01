@@ -1,9 +1,17 @@
 import { BookSearchResult } from "@/types/BookSearch";
 import { Link } from "@nextui-org/link";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
-import { Divider, Image } from "@nextui-org/react";
+
+import {
+  Divider,
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
 import React from "react";
-import { BookRecommendationCard } from "./BookRecommendationCard";
+import { BookRecommendationCard } from "./library/BookRecommendationCard";
 import AddToLibraryButton from "./AddToLibraryButton";
 
 function readyAmazonLink(searchTerm: string, isISBN13: boolean): string {

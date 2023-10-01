@@ -7,6 +7,7 @@ import APIBuilder from "@/lib/client/APIBuilder";
 import { API_SERVICE } from "@/types";
 import { SaveBook } from "@/types/UserServiceTypes";
 import { customToast } from "@/lib/client/utils";
+import { trpc } from "@/app/_trpc/client";
 
 interface Props {
   isbn10: string | undefined;
@@ -63,35 +64,28 @@ const RemoveButton = ({ isbn10, isbn13, bookId }: Props) => {
 };
 
 const AddButton = ({ isbn10, isbn13 }: Props) => {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const utils = trpc.useContext();
 
-  function handleAddToLibrary(isbn10: string | undefined, isbn13: string | undefined) {
-    setIsLoading(true);
+  const { mutate: saveBook, isLoading } = trpc.saveUserBook.useMutation({
+    onSuccess: () => {
+      customToast("Successfully added book to library.", "success");
+      utils.getUserLibrary.invalidate();
+    },
+    onError: (err) => {
+      console.error(err);
+      // customToast("Uh oh! The book did not get added to your library!", "error");
+    },
+    onSettled: () => {
+      // setIsLoading(false);
+    },
+  });
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    const saveBook: SaveBook = {
-      clerkId: "1234",
-      isbn_10: isbn10 || null,
-      isbn_13: isbn13 || null,
-    };
-
-    new APIBuilder("/api")
-      .post(saveBook)
-      .setEndpoint(API_SERVICE.SAVE_BOOK)
-      .execute()
-      .then((res) => {
-        // Add to library
-        customToast("Saved book to library.", "success");
-      })
-      .catch((err) => {
-        customToast("Uh oh! The book did not save!", "error");
-      });
-
-    setIsLoading(false);
-  }
+  const handleAddToLibrary = (isbn10: string | undefined, isbn13: string | undefined) => {
+    saveBook({
+      isbn10: isbn10 || null,
+      isbn13: isbn13 || null,
+    });
+  };
 
   return (
     <Button

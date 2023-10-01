@@ -5,6 +5,7 @@ export interface BookSearchResult {
   selfLink: string;
   volumeInfo: volumeInfo;
   searchInfo: searchInfo;
+  isInLibrary?: boolean;
 }
 
 export interface LibraryBooks extends BookSearchResult {
