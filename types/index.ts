@@ -10,6 +10,7 @@ export type EndpointFunctionsClient = {
   SAVE_BOOK: () => string;
   GET_BOOKS: () => string;
   LOGIN: (id: number | string) => string;
+  FRIENDS: () => string;
 };
 
 export const API_SERVICE: EndpointFunctionsClient = {
@@ -18,6 +19,7 @@ export const API_SERVICE: EndpointFunctionsClient = {
   SAVE_BOOK: () => `/users/library`,
   GET_BOOKS: () => `/users/library`,
   LOGIN: (id) => `/login/${id}`,
+  FRIENDS: () => `/friends`,
 };
 
 export type EndpointFunctionsServer = {
@@ -25,7 +27,7 @@ export type EndpointFunctionsServer = {
   BOOK_SEARCH: () => string;
   SINGLE: (id: number | string) => string;
   LOGIN: (id: number | string) => string;
-  // FRIENDS_CURR_READING: () => string;
+  FRIENDS_CURR_READING: () => string;
   SAVE_BOOK: () => string;
   REMOVE_BOOK: () => string;
   GET_BOOK: () => string;
@@ -37,7 +39,7 @@ export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
   SAVE_BOOK: () => `/users/library`,
   REMOVE_BOOK: () => `/users/library`,
   GET_BOOK: () => `/users/library`,
-  // FRIENDS_CURR_READING: () => `/users/friends`,
+  FRIENDS_CURR_READING: () => `/users/friends`,
   SINGLE: (id) => `/users/${id}`,
   LOGIN: (id) => `/login/${id}`,
 };
