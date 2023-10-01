@@ -16,7 +16,10 @@ export const appRouter = router({
     const { userId, auth, token } = ctx;
     const realToken = await token;
 
+    console.error("======================================== LOG getUserLibrary");
+
     if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+    console.error("======================================== LOG getUserLibrary realToken");
 
     const variable = await new APIBuilder<any, BookSearchResult[]>(SERVICE)
       .get()
@@ -24,6 +27,7 @@ export const appRouter = router({
       .setEndpoint(AGGREGATE_SERVICE.GET_BOOK)
       .execute();
 
+    console.error("======================================== LOG getUserLibrary variable");
     return transformToLibraryBooks(variable.data);
   }),
 
@@ -31,7 +35,9 @@ export const appRouter = router({
     const { userId, auth, token } = ctx;
     const realToken = await token;
 
+    console.error("======================================== LOG saveUserBook");
     if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+    console.error("======================================== LOG saveUserBook realToken");
 
     const res = await new APIBuilder<SaveBook, SaveBookResponse>(SERVICE)
       .post({
@@ -42,6 +48,8 @@ export const appRouter = router({
       .setToken(realToken)
       .setEndpoint(AGGREGATE_SERVICE.SAVE_BOOK)
       .execute();
+
+    console.error("======================================== LOG saveUserBook res");
 
     return res.data;
   }),
