@@ -2,14 +2,11 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { type Context } from "./ClerkContext";
 
-const t = initTRPC.context<Context>().create({
-  errorFormatter({ shape }) {
-    return shape;
-  },
-});
+const t = initTRPC.context<Context>().create();
 
 const isAuthed = t.middleware(({ next, ctx }) => {
   if (!ctx.auth.userId) {
+    console.error("====================================== UNAUTHORIZED LOG");
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
