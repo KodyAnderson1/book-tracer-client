@@ -79,3 +79,14 @@ export const UserLibraryWithBookDetailsSchema = z.object({
   last_reading_update: z.string().nullable(),
   inLibrary: z.boolean(),
 });
+
+export const CustomUserSchema = z.object({
+  clerkId: z.string().nonempty(),
+  username: z.string().nullable(),
+  firstName: z.string().nullable(),
+  lastName: z.string().nullable(),
+});
+
+export const SearchSchema = z.object({
+  searchString: z.string().nonempty(),
+});

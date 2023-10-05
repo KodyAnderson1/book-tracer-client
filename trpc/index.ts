@@ -2,11 +2,17 @@ import APIBuilder from "@/lib/server/APIBuilder";
 import { protectedProcedure, router } from "./trpc";
 
 import { AGGREGATE_SERVICE } from "@/types";
-import { UserLibraryWithBookDetails } from "@/types/BookSearch";
-import { UserLibraryWithBookDetailsSchema, deleteUserBookSchema } from "@/types/zodSchemas";
+import { CustomUser, UserLibraryWithBookDetails } from "@/types/BookSearch";
+import {
+  CustomUserSchema,
+  SearchSchema,
+  UserLibraryWithBookDetailsSchema,
+  deleteUserBookSchema,
+} from "@/types/zodSchemas";
 import { SaveBookResponse } from "@/types/UserServiceTypes";
 import { TRPCError } from "@trpc/server";
 import { getJWTToken } from "@/lib/utils";
+import { APIErrorHandler, ErrorResponse } from "@/lib/server/APIErrorHandler";
 
 const SERVICE = process.env.AGGREGATE_SERVICE || "";
 
@@ -23,13 +29,6 @@ export const appRouter = router({
       .setEndpoint(AGGREGATE_SERVICE.GET_BOOK)
       .execute();
 
-    // console.log(
-    //   "======================================================================================: " +
-    //     variable.data
-    // );
-
-    // variable.data.forEach((item) => console.log(item));
-
     return variable.data;
   }),
 
@@ -39,7 +38,7 @@ export const appRouter = router({
       const { userId, auth, token } = ctx;
       const realToken = await token;
 
-      console.log("REEEEEEEEEEEEEEEEEEE");
+      // console.log("Inside Query saveUserBook");
 
       if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
 
@@ -71,6 +70,57 @@ export const appRouter = router({
 
       return res.data;
     }),
+
+  searchForBooks: protectedProcedure.input(SearchSchema).query(async ({ ctx, input }) => {
+    const { token } = ctx;
+    const realToken = await token;
+
+    // console.log("INSIDE QUERY searchForBooks");
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    let results = await new APIBuilder<any, UserLibraryWithBookDetails[] | ErrorResponse>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.BOOK_SEARCH)
+      .setQueryParameters({ term: input.searchString })
+      .execute();
+
+    const errorHandler = new APIErrorHandler(results);
+    const error = errorHandler.handle();
+
+    if (error) {
+      console.error("Error saving book:", error);
+      throw new TRPCError({ code: "BAD_REQUEST", message: error.errorMessage });
+    }
+
+    return results.data as UserLibraryWithBookDetails[];
+  }),
+
+  addNewUser: protectedProcedure.input(CustomUserSchema).mutation(async ({ ctx, input }) => {
+    const { token } = ctx;
+    const realToken = await token;
+
+    // console.log("INSIDE QUERY: addNewUser");
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    let results = await new APIBuilder<any, CustomUser | ErrorResponse>(SERVICE)
+      .post(input)
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.NEW_USER)
+      .execute();
+
+    const errorHandler = new APIErrorHandler(results);
+    const error = errorHandler.handle();
+
+    if (error) {
+      console.error("Error adding user", error);
+      throw new TRPCError({ code: "BAD_REQUEST", message: error.errorMessage });
+    }
+
+    return results.data as CustomUser;
+  }),
 });
 
 export type AppRouter = typeof appRouter;

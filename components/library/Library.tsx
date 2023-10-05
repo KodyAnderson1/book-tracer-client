@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AchievementCard from "@/components/library/AchievementCard";
 
 import FriendCard from "@/components/library/FriendCard";
@@ -8,7 +8,9 @@ import LibraryTabs from "@/components/library/LibraryTabs";
 import StatisticsCard from "@/components/StatisticsCard";
 import { title, subtitle } from "@/components/primitives";
 import { Separator } from "@/components/ui/separator";
-import { User } from "@clerk/nextjs/dist/types/server";
+import { trpc } from "@/app/_trpc/client";
+import { useUser } from "@clerk/nextjs";
+import { customToast } from "@/lib/client/utils";
 
 const friendsData = [
   {
@@ -62,11 +64,45 @@ const statisticalData = [
   },
 ];
 
-interface Props {
-  user: User;
-}
+const Library = () => {
+  const { user, isLoaded, isSignedIn } = useUser();
 
-const Library = ({ user }: Props) => {
+  const { mutate: saveNewUser, isLoading } = trpc.addNewUser.useMutation({
+    onSuccess: () => {
+      // stuff
+    },
+    onError: (err) => {
+      console.error(err);
+      customToast("Uh oh! Looks like there was an error loading your profile", "error");
+    },
+    onSettled: () => {
+      // setIsLoading(false);
+    },
+  });
+
+  useEffect(() => {
+    console.log("INSIDE USE EFFECT");
+
+    if (!user) {
+      return;
+    }
+
+    saveNewUser({
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      clerkId: user.id,
+    });
+  }, []);
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isSignedIn) {
+    return <div>Not signed in</div>;
+  }
+
   return (
     <section className="flex flex-col px-4 md:px-0">
       <header>
@@ -92,7 +128,11 @@ const Library = ({ user }: Props) => {
             {friendsData.map((friend, i) =>
               i < friendsData.length - 1 ? (
                 <>
-                  <FriendCard key={friend.name + i} name={friend.name} book={friend.book} />
+                  <FriendCard
+                    key={friend.name + i + friend.book}
+                    name={friend.name}
+                    book={friend.book}
+                  />
                   <Separator className="mt-2" />
                 </>
               ) : (
@@ -109,7 +149,7 @@ const Library = ({ user }: Props) => {
               i < achievementsData.length - 1 ? (
                 <>
                   <AchievementCard
-                    key={achiement.name + i}
+                    key={achiement.name + i + achiement.level}
                     name={achiement.name}
                     level={achiement.level}
                     dateRecieved={achiement.dateRecieved}
@@ -133,7 +173,11 @@ const Library = ({ user }: Props) => {
             {statisticalData.map((stat, i) =>
               i < statisticalData.length - 1 ? (
                 <>
-                  <StatisticsCard key={stat.name + i} name={stat.name} value={stat.value} />
+                  <StatisticsCard
+                    key={stat.name + i + stat.value}
+                    name={stat.name}
+                    value={stat.value}
+                  />
                   <Separator className="mt-2" />
                 </>
               ) : (

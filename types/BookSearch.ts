@@ -76,3 +76,12 @@ export interface UserLibraryWithBookDetails {
   last_reading_update: string | null;
   inLibrary: boolean;
 }
+
+/**********************************************/
+
+export interface CustomUser {
+  clerkId: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+}

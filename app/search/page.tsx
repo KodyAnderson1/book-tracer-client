@@ -2,76 +2,55 @@
 
 import { subtitle, title } from "@/components/primitives";
 import { useEffect, useState } from "react";
-import APIBuilder from "@/lib/client/APIBuilder";
 import { UserLibraryWithBookDetails } from "@/types/BookSearch";
-import { API_SERVICE } from "@/types";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { BookCard } from "@/components/BookCard";
 import { BookSearchModal } from "@/components/SearchResultsModal";
+import { trpc } from "../_trpc/client";
+import { customToast } from "@/lib/client/utils";
 
-/**
- * TODO: Going to need to make an individual call to each book to get the description
- */
 export default function Home() {
-  const router = useRouter();
   const routeSearchParams = useSearchParams();
 
-  const [books, setBooks] = useState<UserLibraryWithBookDetails[]>([]);
-  const [loading, setLoading] = useState(false);
-
+  const [isQueryEnabled, setQueryEnabled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<UserLibraryWithBookDetails | null>(null);
 
+  const { data: bookResults, isLoading } = trpc.searchForBooks.useQuery(
+    {
+      searchString: routeSearchParams.get("q") ?? "",
+    },
+    {
+      enabled: isQueryEnabled,
+
+      onError: (err) => {
+        customToast(err.message, "error");
+      },
+      onSuccess: (data) => {
+        if (data.length === 0) {
+          customToast("No results found", "info");
+        }
+        setQueryEnabled(false);
+      },
+    }
+  );
+
   useEffect(() => {
-    setLoading(true);
-    getBooks().then((res) => {
-      if (res === undefined || Object.keys(res).length === 0) {
-        setLoading(false);
-        return;
-      }
+    if (!routeSearchParams.get("q")) {
+      console.log("No search query");
+      return;
+    }
 
-      setBooks(
-        res.sort((a, b) => {
-          const hasThumbnailA = a.small_thumbnail || a.thumbnail ? 1 : 0;
-          const hasThumbnailB = a.small_thumbnail || b.thumbnail ? 1 : 0;
-
-          const ratingsCountA = a.ratings_count ?? 0;
-          const ratingsCountB = b.ratings_count ?? 0;
-
-          const ratingA = a.average_rating ?? 0;
-          const ratingB = b.average_rating ?? 0;
-
-          if (hasThumbnailB !== hasThumbnailA) {
-            return hasThumbnailB - hasThumbnailA;
-          }
-          if (ratingsCountB !== ratingsCountA) {
-            return ratingsCountB - ratingsCountA;
-          }
-
-          return ratingB - ratingA;
-        })
-      );
-      setLoading(false);
-      router.refresh();
-    });
+    console.log("searching for books");
+    setQueryEnabled(true);
+    return () => setQueryEnabled(false); // cleanup
   }, [routeSearchParams]);
-
-  async function getBooks() {
-    return (
-      await new APIBuilder<any, UserLibraryWithBookDetails[]>("/api")
-        .get()
-        .setEndpoint(API_SERVICE.BOOK_SEARCH)
-        .setQueryParameters({ q: routeSearchParams.get("q") ?? "" })
-        .execute()
-    ).data;
-  }
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="gap-4 py-8 md:py-10">
         <header className="mb-8">
@@ -89,7 +68,7 @@ export default function Home() {
     );
   }
 
-  if (books.length === 0) {
+  if (bookResults && bookResults.length === 0) {
     return (
       <section className="gap-4 py-8 md:py-10">
         <div className="flex flex-col items-center justify-center ">
@@ -123,14 +102,15 @@ export default function Home() {
         <main className="flex-1 mb-4 md:mb-0 md:col-span-4 md:row-span-5">
           <h2 className="hidden">Books</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-            {books.map((book) => (
-              <BookCard
-                key={book.book_id}
-                book={book}
-                setSelectedBook={setSelectedBook}
-                setIsModalOpen={setIsModalOpen}
-              />
-            ))}
+            {bookResults &&
+              bookResults.map((book) => (
+                <BookCard
+                  key={book.book_id}
+                  book={book}
+                  setSelectedBook={setSelectedBook}
+                  setIsModalOpen={setIsModalOpen}
+                />
+              ))}
           </div>
         </main>
 

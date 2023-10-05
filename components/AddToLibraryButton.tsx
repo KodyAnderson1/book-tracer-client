@@ -25,7 +25,10 @@ const RemoveButton = ({ book }: Props) => {
     },
     onError: (err) => {
       console.error(err);
-      // customToast("Uh oh! The book did not get added to your library!", "error");
+      customToast(
+        "Uh oh! The book did not get removed from your library! Try again later",
+        "error"
+      );
     },
     onSettled: () => {
       // setIsLoading(false);
