@@ -3,9 +3,9 @@ export interface BookSearchResult {
   id: string;
   etag: string;
   selfLink: string;
-  volumeInfo: volumeInfo;
-  searchInfo: searchInfo;
-  isInLibrary?: boolean;
+  volumeInfo?: volumeInfo;
+  searchInfo?: searchInfo;
+  inLibrary?: boolean;
 }
 
 export interface LibraryBooks extends BookSearchResult {
@@ -49,4 +49,30 @@ interface volumeInfo {
   previewLink: string;
   infoLink: string;
   canonicalVolumeLink: string;
+}
+
+/**********************************************/
+
+export interface UserLibraryWithBookDetails {
+  book_id: string;
+  api_id: string;
+  title: string;
+  author: string[];
+  publisher: string;
+  published_date: string;
+  description: string;
+  isbn_10: string;
+  isbn_13: string;
+  page_count: number | null;
+  print_type: string;
+  categories: string[];
+  average_rating: number | null;
+  ratings_count: number | null;
+  maturity_rating: string;
+  small_thumbnail: string;
+  thumbnail: string;
+  reading_status: string;
+  last_page_read: number | null;
+  last_reading_update: string | null;
+  inLibrary: boolean;
 }

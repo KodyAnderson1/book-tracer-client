@@ -1,6 +1,6 @@
 "use client";
 
-import { BookSearchResult } from "@/types/BookSearch";
+import { UserLibraryWithBookDetails } from "@/types/BookSearch";
 import React, { useState } from "react";
 import { BookCard } from "../BookCard";
 import { Tab, Tabs } from "@nextui-org/react";
@@ -17,7 +17,7 @@ enum Status {
 const LibraryTabs = () => {
   const { data: myBooks, isLoading } = trpc.getUserLibrary.useQuery();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(null);
+  const [selectedBook, setSelectedBook] = useState<UserLibraryWithBookDetails | null>(null);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -35,7 +35,7 @@ const LibraryTabs = () => {
                 ?.filter((book) => book.reading_status === Status.IN_PROGRESS)
                 .map((book) => (
                   <BookCard
-                    key={book.id}
+                    key={book.book_id}
                     book={book}
                     setSelectedBook={setSelectedBook}
                     setIsModalOpen={setIsModalOpen}
@@ -49,7 +49,7 @@ const LibraryTabs = () => {
                 ?.filter((book) => book.reading_status === Status.NOT_STARTED)
                 .map((book) => (
                   <BookCard
-                    key={book.id}
+                    key={book.book_id}
                     book={book}
                     setSelectedBook={setSelectedBook}
                     setIsModalOpen={setIsModalOpen}
@@ -63,7 +63,7 @@ const LibraryTabs = () => {
                 ?.filter((book) => book.reading_status === Status.COMPLETED)
                 .map((book) => (
                   <BookCard
-                    key={book.id}
+                    key={book.book_id}
                     book={book}
                     setSelectedBook={setSelectedBook}
                     setIsModalOpen={setIsModalOpen}

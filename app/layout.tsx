@@ -5,6 +5,7 @@ import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
+import { ClerkProvider } from "@clerk/nextjs";
 
 import "react-loading-skeleton/dist/skeleton.css"
 
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {/* Other head content can also go here */}
       </head>
+      <ClerkProvider>
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex flex-col h-screen">
@@ -41,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </Providers>
       </body>
+      </ClerkProvider>
     </html>
   );
 }

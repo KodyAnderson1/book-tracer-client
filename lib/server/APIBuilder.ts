@@ -138,8 +138,13 @@ export default class APIBuilder<RequestData = any, ResponseData = any> {
    *
    * @returns this - Allows method chaining.
    */
-  delete(): this {
+  delete(data?: RequestData): this {
     this.method = "DELETE";
+
+    if (data !== null) {
+      this.data = data;
+    }
+
     return this;
   }
 

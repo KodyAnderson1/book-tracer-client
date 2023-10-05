@@ -3,51 +3,38 @@
 import { Button } from "@nextui-org/button";
 import React from "react";
 import { MinusIcon, PlusIcon } from "./icons";
-import APIBuilder from "@/lib/client/APIBuilder";
-import { API_SERVICE } from "@/types";
-import { SaveBook } from "@/types/UserServiceTypes";
 import { customToast } from "@/lib/client/utils";
 import { trpc } from "@/app/_trpc/client";
+import { UserLibraryWithBookDetails } from "@/types/BookSearch";
 
 interface Props {
-  isbn10: string | undefined;
-  isbn13: string | undefined;
-  isInLibrary?: boolean;
-  bookId?: string;
+  book: UserLibraryWithBookDetails;
 }
 
-const AddToLibraryButton = ({ isbn10, isbn13, isInLibrary, bookId }: Props) => {
-  return isInLibrary ? (
-    <RemoveButton isbn10={isbn10} isbn13={isbn13} bookId={bookId} />
-  ) : (
-    <AddButton isbn10={isbn10} isbn13={isbn13} />
-  );
+const AddToLibraryButton = ({ book }: Props) => {
+  return book.inLibrary ? <RemoveButton book={book} /> : <AddButton book={book} />;
 };
 
-const RemoveButton = ({ isbn10, isbn13, bookId }: Props) => {
-  const [isLoading, setIsLoading] = React.useState(false);
+const RemoveButton = ({ book }: Props) => {
+  const utils = trpc.useContext();
 
-  function handleRemoveFromLibrary(bookId: string | undefined = "12345") {
-    setIsLoading(true);
+  const { mutate: removeBook, isLoading } = trpc.deleteUserBook.useMutation({
+    onSuccess: () => {
+      customToast("Successfully removed book.", "success");
+      utils.getUserLibrary.invalidate();
+    },
+    onError: (err) => {
+      console.error(err);
+      // customToast("Uh oh! The book did not get added to your library!", "error");
+    },
+    onSettled: () => {
+      // setIsLoading(false);
+    },
+  });
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    new APIBuilder("/api")
-      .delete()
-      .setEndpoint(API_SERVICE.SAVE_BOOK)
-      .setQueryParameters({ book_id: bookId || "" })
-      .execute()
-      .then((res) => {
-        // Remove from library
-        customToast("Successfully removed book.", "success");
-      })
-      .catch((err) => {
-        customToast("Uh oh! The book did not get removed!", "error");
-      });
-
-    setIsLoading(false);
+  function handleRemoveFromLibrary(book: UserLibraryWithBookDetails) {
+    book.inLibrary = false;
+    removeBook(book);
   }
 
   return (
@@ -56,14 +43,14 @@ const RemoveButton = ({ isbn10, isbn13, bookId }: Props) => {
       isLoading={isLoading}
       color="danger"
       fullWidth
-      onClick={() => handleRemoveFromLibrary(bookId)}
+      onClick={() => handleRemoveFromLibrary(book)}
       className="text-white py-2 rounded h-8 flex justify-center items-center hover:bg-pink">
       Remove from Library
     </Button>
   );
 };
 
-const AddButton = ({ isbn10, isbn13 }: Props) => {
+const AddButton = ({ book }: Props) => {
   const utils = trpc.useContext();
 
   const { mutate: saveBook, isLoading } = trpc.saveUserBook.useMutation({
@@ -80,11 +67,9 @@ const AddButton = ({ isbn10, isbn13 }: Props) => {
     },
   });
 
-  const handleAddToLibrary = (isbn10: string | undefined, isbn13: string | undefined) => {
-    saveBook({
-      isbn10: isbn10 || null,
-      isbn13: isbn13 || null,
-    });
+  const handleAddToLibrary = (book: UserLibraryWithBookDetails) => {
+    book.inLibrary = true;
+    saveBook(book);
   };
 
   return (
@@ -93,7 +78,7 @@ const AddButton = ({ isbn10, isbn13 }: Props) => {
       isLoading={isLoading}
       color="secondary"
       fullWidth
-      onClick={() => handleAddToLibrary(isbn10, isbn13)}
+      onClick={() => handleAddToLibrary(book)}
       className="text-white w-full py-2 rounded h-8 flex justify-center items-center hover:bg-pink">
       Add to Library
     </Button>

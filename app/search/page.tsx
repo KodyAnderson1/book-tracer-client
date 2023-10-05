@@ -3,7 +3,7 @@
 import { subtitle, title } from "@/components/primitives";
 import { useEffect, useState } from "react";
 import APIBuilder from "@/lib/client/APIBuilder";
-import { BookSearchResult } from "@/types/BookSearch";
+import { UserLibraryWithBookDetails } from "@/types/BookSearch";
 import { API_SERVICE } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -17,11 +17,11 @@ export default function Home() {
   const router = useRouter();
   const routeSearchParams = useSearchParams();
 
-  const [books, setBooks] = useState<BookSearchResult[]>([]);
+  const [books, setBooks] = useState<UserLibraryWithBookDetails[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(null);
+  const [selectedBook, setSelectedBook] = useState<UserLibraryWithBookDetails | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -33,16 +33,14 @@ export default function Home() {
 
       setBooks(
         res.sort((a, b) => {
-          const hasThumbnailA =
-            a.volumeInfo.imageLinks?.smallThumbnail || a.volumeInfo.imageLinks?.thumbnail ? 1 : 0;
-          const hasThumbnailB =
-            b.volumeInfo.imageLinks?.smallThumbnail || b.volumeInfo.imageLinks?.thumbnail ? 1 : 0;
+          const hasThumbnailA = a.small_thumbnail || a.thumbnail ? 1 : 0;
+          const hasThumbnailB = a.small_thumbnail || b.thumbnail ? 1 : 0;
 
-          const ratingsCountA = a.volumeInfo.ratingsCount ?? 0;
-          const ratingsCountB = b.volumeInfo.ratingsCount ?? 0;
+          const ratingsCountA = a.ratings_count ?? 0;
+          const ratingsCountB = b.ratings_count ?? 0;
 
-          const ratingA = a.volumeInfo.averageRating ?? 0;
-          const ratingB = b.volumeInfo.averageRating ?? 0;
+          const ratingA = a.average_rating ?? 0;
+          const ratingB = b.average_rating ?? 0;
 
           if (hasThumbnailB !== hasThumbnailA) {
             return hasThumbnailB - hasThumbnailA;
@@ -61,7 +59,7 @@ export default function Home() {
 
   async function getBooks() {
     return (
-      await new APIBuilder<any, BookSearchResult[]>("/api")
+      await new APIBuilder<any, UserLibraryWithBookDetails[]>("/api")
         .get()
         .setEndpoint(API_SERVICE.BOOK_SEARCH)
         .setQueryParameters({ q: routeSearchParams.get("q") ?? "" })
@@ -127,7 +125,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {books.map((book) => (
               <BookCard
-                key={book.id}
+                key={book.book_id}
                 book={book}
                 setSelectedBook={setSelectedBook}
                 setIsModalOpen={setIsModalOpen}

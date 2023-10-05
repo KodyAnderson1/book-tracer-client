@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 
 import { Logo } from "@/components/icons";
 import { useState } from "react";
+import { UserButton } from "@clerk/nextjs";
 
 export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,6 +101,10 @@ export const Navbar = () => {
         </NavbarItem>
 
         <NavbarItem className="hidden md:flex">
+          <UserButton />
+        </NavbarItem>
+
+        <NavbarItem className="hidden md:flex">
           <Button className="text-sm font-normal bg-primary" variant="flat">
             Sign Up
           </Button>
@@ -111,6 +116,7 @@ export const Navbar = () => {
           <GithubIcon className="text-white" />
         </Link>
         <ThemeSwitch />
+        <UserButton />
         <NavbarMenuToggle />
       </NavbarContent>
 

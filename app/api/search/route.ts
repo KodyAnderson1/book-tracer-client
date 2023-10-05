@@ -1,22 +1,21 @@
-import { EXAMPLE } from "@/lib/client/EXAMPLES";
 import APIBuilder from "@/lib/server/APIBuilder";
 import { APIErrorHandler, ErrorResponse } from "@/lib/server/APIErrorHandler";
+import { getJWTToken } from "@/lib/utils";
 import { AGGREGATE_SERVICE } from "@/types";
-import { BookSearchResult } from "@/types/BookSearch";
+import { UserLibraryWithBookDetails } from "@/types/BookSearch";
 import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 
 const SERVICE = process.env.AGGREGATE_SERVICE;
-const TOKEN = process.env.TEMP_JWT;
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const query = searchParams.get("q");
 
   const { userId, getToken } = auth();
-  const jwt_TOKEN = await getToken({ template: "default" });
+  const realToken = await getToken({ template: "default" });
 
-  if (!SERVICE || !jwt_TOKEN) {
+  if (!SERVICE || !realToken) {
     return NextResponse.error();
   }
 
@@ -24,9 +23,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({});
   }
 
-  let results = await new APIBuilder<any, BookSearchResult[] | ErrorResponse>(SERVICE)
+  let results = await new APIBuilder<any, UserLibraryWithBookDetails[] | ErrorResponse>(SERVICE)
     .get()
-    .setToken(jwt_TOKEN)
+    .setToken(getJWTToken(realToken))
     .setEndpoint(AGGREGATE_SERVICE.BOOK_SEARCH)
     .setQueryParameters({ term: query })
     .execute();

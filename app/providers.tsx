@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { httpBatchLink } from "@trpc/react-query";
 import { absoluteUrl } from "@/lib/utils";
 
+
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
@@ -35,6 +36,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
           <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
         </trpc.Provider>
       </NextThemesProvider>
+
       <ToastContainer />
     </NextUIProvider>
   );
