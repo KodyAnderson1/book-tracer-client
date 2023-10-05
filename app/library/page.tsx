@@ -6,5 +6,5 @@ export default async function Home() {
 
   if (!user) return <div>Not logged in</div>;
 
-  return <Library user={user} />;
+  return <Library />;
 }
