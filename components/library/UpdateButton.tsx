@@ -13,6 +13,11 @@ interface Props {
 }
 
 const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, currentPage }: Props) => {
+  console.log("🚀 ~ file: UpdateButton.tsx:16 ~ UpdateProgressButton ~ currentPage:", currentPage);
+  console.log(
+    "🚀 ~ file: UpdateButton.tsx:16 ~ UpdateProgressButton ~ currentPage:",
+    typeof currentPage
+  );
   const utils = trpc.useContext();
   const { mutate: updateProgress, isLoading } = trpc.updateBookProgress.useMutation({
     onSuccess: () => {
@@ -22,8 +27,6 @@ const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, current
     },
     onError: (err: any) => {
       console.error(err);
-      console.log(`Number: ${currentPage.valueOf()}`);
-      console.log(`Number: ${typeof currentPage}`);
       customToast("Uh oh! The book did not get updated! Try again later", "error");
     },
     onSettled: () => {
@@ -40,7 +43,8 @@ const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, current
 
     updateProgress({
       bookId: book.book_id,
-      currentPage: currentPage,
+      // @ts-ignore
+      currentPage: currentPage[0] as number,
       clerkId: "2134",
     });
   };

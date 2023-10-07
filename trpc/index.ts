@@ -138,7 +138,7 @@ export const appRouter = router({
       const { token, userId } = ctx;
       const realToken = await token;
 
-      console.log("INSIDE QUERY: updateBookProgress");
+      // console.log("INSIDE QUERY: updateBookProgress");
       if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
       let results = await new APIBuilder<UpdateProgress, UpdateProgress>(SERVICE)
         .patch({
@@ -158,7 +158,7 @@ export const appRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: error.errorMessage });
       }
 
-      console.log(results.data);
+      // console.log(results.data);
       return results.data as UpdateProgress;
     }),
 });
