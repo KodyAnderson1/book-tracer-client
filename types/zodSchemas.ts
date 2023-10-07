@@ -85,6 +85,7 @@ export const CustomUserSchema = z.object({
   username: z.string().nullable(),
   firstName: z.string().nullable(),
   lastName: z.string().nullable(),
+  imageUrl: z.string().nullable(),
 });
 
 export const SearchSchema = z.object({

@@ -92,6 +92,7 @@ const Library = () => {
       firstName: user.firstName,
       lastName: user.lastName,
       clerkId: user.id,
+      imageUrl: user.imageUrl,
     });
   }, []);
 

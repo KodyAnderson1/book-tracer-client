@@ -63,7 +63,8 @@ const AddButton = ({ book }: Props) => {
     },
     onError: (err) => {
       console.error(err);
-      // customToast("Uh oh! The book did not get added to your library!", "error");
+
+      customToast("Uh oh! The book did not get added to your library!", "error");
     },
     onSettled: () => {
       // setIsLoading(false);

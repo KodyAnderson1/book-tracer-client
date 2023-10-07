@@ -2,14 +2,13 @@ import APIBuilder from "@/lib/server/APIBuilder";
 import { protectedProcedure, router } from "./trpc";
 
 import { AGGREGATE_SERVICE } from "@/types";
-import { CustomUser, UserLibraryWithBookDetails } from "@/types/BookSearch";
+import { CustomUser, SaveBookResponse, UserLibraryWithBookDetails } from "@/types/BookSearch";
 import {
   CustomUserSchema,
   SearchSchema,
   UserLibraryWithBookDetailsSchema,
   deleteUserBookSchema,
 } from "@/types/zodSchemas";
-import { SaveBookResponse } from "@/types/UserServiceTypes";
 import { TRPCError } from "@trpc/server";
 import { getJWTToken } from "@/lib/utils";
 import { APIErrorHandler, ErrorResponse } from "@/lib/server/APIErrorHandler";
@@ -42,15 +41,13 @@ export const appRouter = router({
 
       if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      const res = await new APIBuilder<UserLibraryWithBookDetails, UserLibraryWithBookDetails>(
-        SERVICE
-      )
+      const res = await new APIBuilder<UserLibraryWithBookDetails, SaveBookResponse>(SERVICE)
         .post(input)
         .setToken(getJWTToken(realToken))
         .setEndpoint(AGGREGATE_SERVICE.SAVE_BOOK)
         .execute();
 
-      return res.data;
+      return res.data as SaveBookResponse;
     }),
 
   deleteUserBook: protectedProcedure

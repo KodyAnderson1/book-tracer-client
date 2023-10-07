@@ -84,4 +84,9 @@ export interface CustomUser {
   username: string | null;
   firstName: string | null;
   lastName: string | null;
+  imageUrl: string | null;
+}
+
+export interface SaveBookResponse {
+  id: string;
 }
