@@ -11,32 +11,23 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { Button } from "@nextui-org/button";
 import AddToLibraryButton from "../AddToLibraryButton";
 import UpdateProgressButton from "./UpdateButton";
 import { Slider } from "../ui/slider";
-import { useEffect, useState } from "react";
-import { Input } from "@nextui-org/input";
+import { useState } from "react";
 
 const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [pageRead, setPageRead] = useState<number>(book.last_page_read || 0);
+  const [pageRead, setPageRead] = useState<number[]>(([book.last_page_read] as number[]) || [0]);
   const [isValueChanged, setIsValueChanged] = useState<boolean>(false);
 
   const handleValueChange = (value: number) => {
-    setPageRead(value);
+    setPageRead([value]);
     setIsValueChanged(value !== book.last_page_read);
   };
 
-  useEffect(() => {
-    console.log("pageRead", pageRead);
-  }, []);
-
   return (
     <>
-      {/* <Button color="primary" onPress={onOpen}>
-        Open Modal
-      </Button> */}
       <div className="group relative h-full cursor-pointer w-full " onClick={onOpen}>
         <div className="bg-background-card border border-background-foreground p-4 rounded transition-transform duration-300 transform hover:shadow-xl hover:-translate-y-1 h-full">
           <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 flex-grow">
@@ -173,9 +164,9 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
                   <div className="flex w-full">
                     <Slider
                       className="w-[72%] md:w-[88%]"
-                      onValueChange={handleValueChange}
-                      value={[pageRead]}
-                      max={book.page_count}
+                      onValueChange={(e: any) => handleValueChange(e)}
+                      value={pageRead}
+                      max={book.page_count || 100}
                       step={1}
                     />
 
