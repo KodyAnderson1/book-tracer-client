@@ -1,12 +1,10 @@
 "use client";
 
-import { UserLibraryWithBookDetails } from "@/types/BookSearch";
-import React, { useState } from "react";
-import { BookCard } from "../BookCard";
+import React from "react";
 import { Tab, Tabs } from "@nextui-org/react";
-import { BookSearchModal } from "../SearchResultsModal";
 import { trpc } from "@/app/_trpc/client";
 import Skeleton from "react-loading-skeleton";
+import LibraryBookCard from "./LibraryBookCard";
 
 enum Status {
   IN_PROGRESS = "IN_PROGRESS",
@@ -15,13 +13,14 @@ enum Status {
 }
 
 const LibraryTabs = () => {
-  const { data: myBooks, isLoading } = trpc.getUserLibrary.useQuery();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<UserLibraryWithBookDetails | null>(null);
+  const { data: myBooks, isLoading } = trpc.getUserLibrary.useQuery(undefined, {
+    retryDelay: 1000 * 60 * 5,
+    refetchOnWindowFocus: false, // default: true
+  });
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  if (!myBooks) {
+    return null;
+  }
 
   return (
     <>
@@ -34,12 +33,7 @@ const LibraryTabs = () => {
               {myBooks
                 ?.filter((book) => book.reading_status === Status.IN_PROGRESS)
                 .map((book) => (
-                  <BookCard
-                    key={book.book_id}
-                    book={book}
-                    setSelectedBook={setSelectedBook}
-                    setIsModalOpen={setIsModalOpen}
-                  />
+                  <LibraryBookCard key={book.book_id} book={book} />
                 ))}
             </div>
           </Tab>
@@ -48,12 +42,7 @@ const LibraryTabs = () => {
               {myBooks
                 ?.filter((book) => book.reading_status === Status.NOT_STARTED)
                 .map((book) => (
-                  <BookCard
-                    key={book.book_id}
-                    book={book}
-                    setSelectedBook={setSelectedBook}
-                    setIsModalOpen={setIsModalOpen}
-                  />
+                  <LibraryBookCard key={book.book_id} book={book} />
                 ))}
             </div>
           </Tab>
@@ -62,19 +51,11 @@ const LibraryTabs = () => {
               {myBooks
                 ?.filter((book) => book.reading_status === Status.COMPLETED)
                 .map((book) => (
-                  <BookCard
-                    key={book.book_id}
-                    book={book}
-                    setSelectedBook={setSelectedBook}
-                    setIsModalOpen={setIsModalOpen}
-                  />
+                  <LibraryBookCard key={book.book_id} book={book} />
                 ))}
             </div>
           </Tab>
         </Tabs>
-      )}
-      {selectedBook && (
-        <BookSearchModal isOpen={isModalOpen} onOpenChange={handleCloseModal} book={selectedBook} />
       )}
     </>
   );

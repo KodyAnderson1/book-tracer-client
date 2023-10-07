@@ -2,10 +2,16 @@ import APIBuilder from "@/lib/server/APIBuilder";
 import { protectedProcedure, router } from "./trpc";
 
 import { AGGREGATE_SERVICE } from "@/types";
-import { CustomUser, SaveBookResponse, UserLibraryWithBookDetails } from "@/types/BookSearch";
+import {
+  CustomUser,
+  SaveBookResponse,
+  UpdateProgress,
+  UserLibraryWithBookDetails,
+} from "@/types/BookSearch";
 import {
   CustomUserSchema,
   SearchSchema,
+  UpdateProgressSchema,
   UserLibraryWithBookDetailsSchema,
   deleteUserBookSchema,
 } from "@/types/zodSchemas";
@@ -27,6 +33,13 @@ export const appRouter = router({
       .setToken(getJWTToken(realToken))
       .setEndpoint(AGGREGATE_SERVICE.GET_BOOK)
       .execute();
+
+    if (variable.data) {
+      variable.data.map((item) => {
+        item.inLibrary = true;
+        return item;
+      });
+    }
 
     return variable.data;
   }),
@@ -118,6 +131,36 @@ export const appRouter = router({
 
     return results.data as CustomUser;
   }),
+
+  updateBookProgress: protectedProcedure
+    .input(UpdateProgressSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { token, userId } = ctx;
+      const realToken = await token;
+
+      console.log("INSIDE QUERY: updateBookProgress");
+      if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+      let results = await new APIBuilder<UpdateProgress, UpdateProgress>(SERVICE)
+        .patch({
+          clerkId: userId,
+          bookId: input.bookId,
+          currentPage: input.currentPage,
+        })
+        .setToken(getJWTToken(realToken))
+        .setEndpoint(AGGREGATE_SERVICE.SAVE_BOOK)
+        .execute();
+
+      const errorHandler = new APIErrorHandler(results);
+      const error = errorHandler.handle();
+
+      if (error) {
+        console.error("Error adding user", error);
+        throw new TRPCError({ code: "BAD_REQUEST", message: error.errorMessage });
+      }
+
+      console.log(results.data);
+      return results.data as UpdateProgress;
+    }),
 });
 
 export type AppRouter = typeof appRouter;

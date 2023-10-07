@@ -23,7 +23,7 @@ const RemoveButton = ({ book }: Props) => {
       customToast("Successfully removed book.", "success");
       utils.getUserLibrary.invalidate();
     },
-    onError: (err) => {
+    onError: (err: any) => {
       console.error(err);
       customToast(
         "Uh oh! The book did not get removed from your library! Try again later",
@@ -42,6 +42,7 @@ const RemoveButton = ({ book }: Props) => {
 
   return (
     <Button
+      isDisabled
       startContent={!isLoading ? <MinusIcon /> : null}
       isLoading={isLoading}
       color="danger"
@@ -61,7 +62,7 @@ const AddButton = ({ book }: Props) => {
       customToast("Successfully added book to library.", "success");
       utils.getUserLibrary.invalidate();
     },
-    onError: (err) => {
+    onError: (err: any) => {
       console.error(err);
 
       customToast("Uh oh! The book did not get added to your library!", "error");

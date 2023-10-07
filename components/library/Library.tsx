@@ -81,8 +81,6 @@ const Library = () => {
   });
 
   useEffect(() => {
-    console.log("INSIDE USE EFFECT");
-
     if (!user) {
       return;
     }

@@ -15,6 +15,6 @@ export const customToast = (
     pauseOnHover: true,
     draggable: true,
     progress: undefined,
-    theme: "light",
+    theme: "colored",
   });
 };

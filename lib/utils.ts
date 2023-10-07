@@ -17,3 +17,11 @@ export function absoluteUrl(path: string) {
 export function getJWTToken(realToken: string): string {
   return process.env.VERCEL_URL ? realToken : CLERK_DEV_TOKEN;
 }
+
+export function readyAmazonLink(searchTerm: string, isISBN13: boolean): string {
+  const baseURL = "https://www.amazon.com/s?k=";
+  const searchQuery = encodeURIComponent(searchTerm);
+  const category = isISBN13 ? "&i=stripbooks&linkCode=qs" : "";
+
+  return baseURL + searchQuery + category;
+}

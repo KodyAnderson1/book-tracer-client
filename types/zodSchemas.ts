@@ -81,7 +81,7 @@ export const UserLibraryWithBookDetailsSchema = z.object({
 });
 
 export const CustomUserSchema = z.object({
-  clerkId: z.string().nonempty(),
+  clerkId: z.string(),
   username: z.string().nullable(),
   firstName: z.string().nullable(),
   lastName: z.string().nullable(),
@@ -90,4 +90,10 @@ export const CustomUserSchema = z.object({
 
 export const SearchSchema = z.object({
   searchString: z.string().nonempty(),
+});
+
+export const UpdateProgressSchema = z.object({
+  clerkId: z.string(),
+  bookId: z.string(),
+  currentPage: z.number(),
 });

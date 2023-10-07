@@ -90,3 +90,9 @@ export interface CustomUser {
 export interface SaveBookResponse {
   id: string;
 }
+
+export interface UpdateProgress {
+  clerkId: string;
+  bookId: string;
+  currentPage: number;
+}
