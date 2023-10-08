@@ -75,7 +75,6 @@ const RemoveButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
 
   return (
     <Button
-      isDisabled
       startContent={<IconToDisplay />}
       isLoading={isLoading}
       color="danger"
