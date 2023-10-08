@@ -12,7 +12,12 @@ const recentSearches = [
   "The Silmarillion",
 ];
 
-const Searchbar = () => {
+interface Props {
+  setNavbarMenuChange: (e: boolean) => void;
+  navbarMenuChange: boolean;
+}
+
+const Searchbar = ({ setNavbarMenuChange, navbarMenuChange }: Props) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -34,6 +39,7 @@ const Searchbar = () => {
       return newRecentSearches;
     });
     setSearchQuery("");
+    navbarMenuChange && setNavbarMenuChange(false);
     router.push(`/search?q=${searchTerm}`);
   };
 

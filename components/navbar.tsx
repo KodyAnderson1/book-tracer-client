@@ -9,27 +9,27 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@nextui-org/navbar";
-import { Button } from "@nextui-org/button";
-import { Kbd } from "@nextui-org/kbd";
 import { Link } from "@nextui-org/link";
-import { Input } from "@nextui-org/input";
-import { Divider, Modal, ModalBody, ModalContent, Select, SelectItem } from "@nextui-org/react";
 
 import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
 import clsx from "clsx";
 
 import { ThemeSwitch } from "@/components/theme-switch";
-import { GithubIcon, SearchIcon } from "@/components/icons";
-import { useRouter } from "next/navigation";
+import { GithubIcon } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
-import { useState } from "react";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { useDisclosure } from "@nextui-org/react";
 import Searchbar from "./Searchbar";
+import { useState } from "react";
 
 export const Navbar = () => {
+  const [navbarMenuChange, setNavbarMenuChange] = useState(false);
+
+  const navbarMenuChangeHandler = (e: boolean) => {
+    setNavbarMenuChange(e);
+  };
+
   return (
     <NextUINavbar maxWidth="xl" position="sticky" isBordered className="bg-secondary text-white">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -40,7 +40,10 @@ export const Navbar = () => {
           </NextLink>
         </NavbarBrand>
         <NavbarItem className="hidden md:flex lg:w-80">
-          <Searchbar />
+          <Searchbar
+            navbarMenuChange={navbarMenuChange}
+            setNavbarMenuChange={setNavbarMenuChange}
+          />
         </NavbarItem>
       </NavbarContent>
 
@@ -89,11 +92,11 @@ export const Navbar = () => {
             <SignInButton />
           </NavbarItem>
         </SignedOut>
-        <NavbarMenuToggle />
+        <NavbarMenuToggle onChange={setNavbarMenuChange} />
       </NavbarContent>
 
       <NavbarMenu>
-        <Searchbar />
+        <Searchbar navbarMenuChange={navbarMenuChange} setNavbarMenuChange={setNavbarMenuChange} />
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
