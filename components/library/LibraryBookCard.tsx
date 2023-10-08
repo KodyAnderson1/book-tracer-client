@@ -18,8 +18,11 @@ import { useState } from "react";
 
 const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [pageRead, setPageRead] = useState<number[]>(([book.last_page_read] as number[]) || [0]);
+  const [pageRead, setPageRead] = useState<number[]>(
+    ([book.last_page_read || 0] as number[]) || [0]
+  );
   const [isValueChanged, setIsValueChanged] = useState<boolean>(false);
+  const [isInLibrary, setIsInLibrary] = useState<boolean>(book?.inLibrary || false);
 
   const handleValueChange = (value: number) => {
     setPageRead([value]);
@@ -29,6 +32,7 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
   function handleOnOpenChange() {
     onOpenChange();
     setPageRead([book.last_page_read] as number[]);
+    setIsValueChanged(false);
   }
 
   return (
@@ -90,7 +94,9 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
                 {/* Left side with book details and image */}
                 <div className="w-full md:w-[40%] flex flex-col items-center md:p-4">
                   <Image
-                    src={book.thumbnail}
+                    src={
+                      book.thumbnail || book.small_thumbnail || "https://via.placeholder.com/150"
+                    }
                     alt="Book Image"
                     fallbackSrc="https://via.placeholder.com/150"
                     width={200}
@@ -203,7 +209,11 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
                     setIsValueChanged={setIsValueChanged}
                     currentPage={pageRead[0]}
                   />
-                  <AddToLibraryButton book={book} />
+                  <AddToLibraryButton
+                    book={book}
+                    isInLibrary={isInLibrary}
+                    setIsInLibrary={setIsInLibrary}
+                  />
                 </div>
               </ModalFooter>
             </>

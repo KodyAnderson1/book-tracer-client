@@ -50,8 +50,8 @@ const Library = () => {
             Your Library
           </h1>
           <h2 className={subtitle({ className: "text-background-foreground" })}>
-            Welcome,&nbsp;
-            <span className="font-semibold">User, Signing you in...</span>
+            Welcome!&nbsp;
+            <span className="font-semibold">Signing you in...</span>
           </h2>
         </header>
         <div className="flex-grow flex justify-center items-center">

@@ -13,6 +13,7 @@ import { Button } from "@nextui-org/button";
 import { Kbd } from "@nextui-org/kbd";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
+import { Divider, Modal, ModalBody, ModalContent, Select, SelectItem } from "@nextui-org/react";
 
 import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
@@ -25,50 +26,10 @@ import { useRouter } from "next/navigation";
 import { Logo } from "@/components/icons";
 import { useState } from "react";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { useDisclosure } from "@nextui-org/react";
+import Searchbar from "./Searchbar";
 
 export const Navbar = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const router = useRouter();
-
-  const handleSearchChange = (e: string) => {
-    setSearchQuery(e);
-  };
-
-  const handleClick = () => {
-    router.push(`/search?q=${searchQuery}`);
-  };
-
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      value={searchQuery}
-      onValueChange={(e) => handleSearchChange(e)}
-      classNames={{
-        inputWrapper: "bg-background",
-        input: "text-sm text-background-foreground",
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          handleClick();
-        }
-      }}
-      endContent={
-        <Kbd
-          className="hidden lg:inline-block bg-secondary text-white cursor-pointer"
-          onClick={handleClick}
-          keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
-
   return (
     <NextUINavbar maxWidth="xl" position="sticky" isBordered className="bg-secondary text-white">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -78,7 +39,9 @@ export const Navbar = () => {
             <p className="font-bold text-inherit">Book Tracer</p>
           </NextLink>
         </NavbarBrand>
-        <NavbarItem className="hidden lg:flex lg:w-80">{searchInput}</NavbarItem>
+        <NavbarItem className="hidden md:flex lg:w-80">
+          <Searchbar />
+        </NavbarItem>
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="end">
@@ -130,7 +93,7 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarMenu>
-        {searchInput}
+        <Searchbar />
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>

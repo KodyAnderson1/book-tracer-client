@@ -10,7 +10,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@nextui-org/react";
-import React from "react";
+import React, { useState } from "react";
 import { BookRecommendationCard } from "./library/BookRecommendationCard";
 import AddToLibraryButton from "./AddToLibraryButton";
 
@@ -29,7 +29,9 @@ interface BookSearchModelProps {
 }
 
 export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelProps) {
-  if (book === null) return null;
+  const [isInLibrary, setIsInLibrary] = useState<boolean>(book?.inLibrary || false);
+
+  if (!book) return null;
 
   return (
     <Modal
@@ -65,7 +67,7 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
               {/* Left side with book details and image */}
               <div className="w-full md:w-[40%] flex flex-col items-center md:p-4">
                 <Image
-                  src={book.thumbnail}
+                  src={book.thumbnail || book.small_thumbnail || "https://via.placeholder.com/150"}
                   alt="Book Image"
                   fallbackSrc="https://via.placeholder.com/150"
                   width={200}
@@ -147,7 +149,11 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
             </ModalBody>
 
             <ModalFooter className="px-4">
-              <AddToLibraryButton book={book} />
+              <AddToLibraryButton
+                book={book}
+                isInLibrary={isInLibrary}
+                setIsInLibrary={setIsInLibrary}
+              />
             </ModalFooter>
           </>
         )}

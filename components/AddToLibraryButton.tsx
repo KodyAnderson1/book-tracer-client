@@ -2,26 +2,34 @@
 
 import { Button } from "@nextui-org/button";
 import React from "react";
-import { MinusIcon, PlusIcon } from "./icons";
+import { PlusIcon } from "./icons";
 import { customToast } from "@/lib/client/utils";
 import { trpc } from "@/app/_trpc/client";
 import { UserLibraryWithBookDetails } from "@/types/BookSearch";
+import { Check, Trash2 } from "lucide-react";
 
 interface Props {
   book: UserLibraryWithBookDetails;
+  isInLibrary: boolean;
+  setIsInLibrary: (isInLibrary: boolean) => void;
 }
 
-const AddToLibraryButton = ({ book }: Props) => {
-  return book.inLibrary ? <RemoveButton book={book} /> : <AddButton book={book} />;
+const AddToLibraryButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
+  return isInLibrary ? (
+    <RemoveButton book={book} isInLibrary={isInLibrary} setIsInLibrary={setIsInLibrary} />
+  ) : (
+    <AddButton book={book} isInLibrary={isInLibrary} setIsInLibrary={setIsInLibrary} />
+  );
 };
 
-const RemoveButton = ({ book }: Props) => {
+const RemoveButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
   const utils = trpc.useContext();
-
+  const [isConfirming, setIsConfirming] = React.useState<boolean>(false);
   const { mutate: removeBook, isLoading } = trpc.deleteUserBook.useMutation({
     onSuccess: () => {
       customToast("Successfully removed book.", "success");
       utils.getUserLibrary.invalidate();
+      setIsInLibrary(false);
     },
     onError: (err: any) => {
       console.error(err);
@@ -36,31 +44,57 @@ const RemoveButton = ({ book }: Props) => {
   });
 
   function handleRemoveFromLibrary(book: UserLibraryWithBookDetails) {
+    console.log("removing book from library");
     book.inLibrary = false;
     removeBook(book);
+    setIsConfirming(false);
   }
+
+  function confirmRemoveFromLibrary(book: UserLibraryWithBookDetails) {
+    if (isConfirming) {
+      handleRemoveFromLibrary(book);
+      return;
+    }
+
+    console.log("confirming removal from library");
+    setIsConfirming(true);
+
+    // book.inLibrary = false;
+    // removeBook(book);
+  }
+
+  const IconToDisplay = () => {
+    if (isLoading) return null;
+
+    if (isConfirming) {
+      return <Check />;
+    } else {
+      return <Trash2 />;
+    }
+  };
 
   return (
     <Button
       isDisabled
-      startContent={!isLoading ? <MinusIcon /> : null}
+      startContent={<IconToDisplay />}
       isLoading={isLoading}
       color="danger"
       fullWidth
-      onClick={() => handleRemoveFromLibrary(book)}
+      onClick={() => confirmRemoveFromLibrary(book)}
       className="text-white py-2 rounded h-8 flex justify-center items-center hover:bg-pink">
-      Remove from Library
+      {isConfirming ? "Confirm remove from library" : "Remove from Library"}
     </Button>
   );
 };
 
-const AddButton = ({ book }: Props) => {
+const AddButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
   const utils = trpc.useContext();
 
   const { mutate: saveBook, isLoading } = trpc.saveUserBook.useMutation({
     onSuccess: () => {
       customToast("Successfully added book to library.", "success");
       utils.getUserLibrary.invalidate();
+      setIsInLibrary(true);
     },
     onError: (err: any) => {
       console.error(err);
