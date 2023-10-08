@@ -59,7 +59,6 @@ const Searchbar = () => {
             <>
               <ModalBody className="p-4 bg-background">
                 <Input
-                  variant="underlined"
                   autoFocus
                   aria-label="Search"
                   value={searchQuery}
@@ -74,7 +73,7 @@ const Searchbar = () => {
                     }
                   }}
                   endContent={<SearchKbd handleClick={() => handleClick(searchQuery)} />}
-                  label="Search"
+                  placeholder="Search"
                   startContent={
                     <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
                   }
@@ -82,6 +81,7 @@ const Searchbar = () => {
                 />
                 {recentSearches && recentSearches.length > 0 ? (
                   <>
+                    <Divider className="mt-2" />
                     <div className="bg-background">
                       <div className="text-sm text-background-foreground">
                         <p className="font-semibold text-md mb-3">Recent</p>
