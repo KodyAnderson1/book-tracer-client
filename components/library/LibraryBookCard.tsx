@@ -26,6 +26,11 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
     setIsValueChanged(value !== book.last_page_read);
   };
 
+  function handleOnOpenChange() {
+    onOpenChange();
+    setPageRead([book.last_page_read] as number[]);
+  }
+
   return (
     <>
       <div className="group relative h-full cursor-pointer w-full " onClick={onOpen}>
@@ -58,7 +63,7 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
         size={"5xl"}
         className="bg-background"
         isOpen={isOpen}
-        onOpenChange={onOpenChange}>
+        onOpenChange={() => handleOnOpenChange()}>
         <ModalContent className="text-background-foreground h-[75%] md:h-auto lg:h-[44rem] bg-background-card border border-background-foreground rounded-lg shadow-lg">
           {(onClose) => (
             <>
@@ -163,6 +168,7 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
                 <div className="flex justify-center">
                   <div className="flex w-full">
                     <Slider
+                      disabled={book.page_count === book.last_page_read}
                       className="w-[72%] md:w-[88%]"
                       onValueChange={(e: any) => handleValueChange(e)}
                       value={pageRead}

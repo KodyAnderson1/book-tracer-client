@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 
 import { Logo } from "@/components/icons";
 import { useState } from "react";
-import { UserButton } from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,15 +100,17 @@ export const Navbar = () => {
           <ThemeSwitch />
         </NavbarItem>
 
-        <NavbarItem className="hidden md:flex">
-          <UserButton />
-        </NavbarItem>
+        <SignedIn>
+          <NavbarItem className="hidden md:flex">
+            <UserButton />
+          </NavbarItem>
+        </SignedIn>
 
-        <NavbarItem className="hidden md:flex">
-          <Button className="text-sm font-normal bg-primary" variant="flat">
-            Sign Up
-          </Button>
-        </NavbarItem>
+        <SignedOut>
+          <NavbarItem className="hidden md:flex">
+            <SignInButton />
+          </NavbarItem>
+        </SignedOut>
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
@@ -116,7 +118,14 @@ export const Navbar = () => {
           <GithubIcon className="text-white" />
         </Link>
         <ThemeSwitch />
-        <UserButton />
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+        <SignedOut>
+          <NavbarItem>
+            <SignInButton />
+          </NavbarItem>
+        </SignedOut>
         <NavbarMenuToggle />
       </NavbarContent>
 

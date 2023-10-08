@@ -25,11 +25,11 @@ const LibraryTabs = () => {
   return (
     <>
       {isLoading ? (
-        <Skeleton height={200} width={600} className="my-2 bg-background-card" count={6} />
+        <Skeleton height={200} width={600} className="my-2 bg-background-card" count={3} />
       ) : (
         <Tabs aria-label="Options" size="lg" variant="underlined">
           <Tab key="currently_reading" title="Currently Reading">
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
               {myBooks
                 ?.filter((book) => book.reading_status === Status.IN_PROGRESS)
                 .map((book) => (
@@ -38,7 +38,7 @@ const LibraryTabs = () => {
             </div>
           </Tab>
           <Tab key="havent_started" title="New">
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
               {myBooks
                 ?.filter((book) => book.reading_status === Status.NOT_STARTED)
                 .map((book) => (
@@ -47,7 +47,7 @@ const LibraryTabs = () => {
             </div>
           </Tab>
           <Tab key="completed" title="Finished">
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
               {myBooks
                 ?.filter((book) => book.reading_status === Status.COMPLETED)
                 .map((book) => (

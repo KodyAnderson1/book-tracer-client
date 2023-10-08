@@ -161,6 +161,13 @@ export const appRouter = router({
       // console.log(results.data);
       return results.data as UpdateProgress;
     }),
+
+  alwaysFail: protectedProcedure.query(async ({ ctx }) => {
+    const { token, userId } = ctx;
+    const realToken = await token;
+
+    throw new TRPCError({ code: "BAD_REQUEST", message: "ERROR MESSAGE" });
+  }),
 });
 
 export type AppRouter = typeof appRouter;
