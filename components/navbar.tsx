@@ -25,13 +25,27 @@ import { useState } from "react";
 
 export const Navbar = () => {
   const [navbarMenuChange, setNavbarMenuChange] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
-  const navbarMenuChangeHandler = (e: boolean) => {
-    setNavbarMenuChange(e);
+  const setSearches = (searchTerm: string) => {
+    setRecentSearches((prev: string[]) => {
+      const newRecentSearches = prev.filter((item: string) => item !== searchTerm);
+      newRecentSearches.push(searchTerm);
+
+      if (newRecentSearches.length > 5) {
+        newRecentSearches.shift();
+      }
+      return newRecentSearches;
+    });
   };
 
   return (
-    <NextUINavbar maxWidth="xl" position="sticky" isBordered className="bg-secondary text-white">
+    <NextUINavbar
+      isMenuOpen={navbarMenuChange}
+      maxWidth="xl"
+      position="sticky"
+      isBordered
+      className="bg-secondary text-white">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
@@ -43,6 +57,8 @@ export const Navbar = () => {
           <Searchbar
             navbarMenuChange={navbarMenuChange}
             setNavbarMenuChange={setNavbarMenuChange}
+            recentSearches={recentSearches}
+            setSearches={setSearches}
           />
         </NavbarItem>
       </NavbarContent>
@@ -96,7 +112,12 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarMenu>
-        <Searchbar navbarMenuChange={navbarMenuChange} setNavbarMenuChange={setNavbarMenuChange} />
+        <Searchbar
+          navbarMenuChange={navbarMenuChange}
+          setNavbarMenuChange={setNavbarMenuChange}
+          recentSearches={recentSearches}
+          setSearches={setSearches}
+        />
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>

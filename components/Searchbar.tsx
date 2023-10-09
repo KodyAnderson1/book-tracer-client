@@ -4,23 +4,20 @@ import { Kbd } from "@nextui-org/kbd";
 import { Divider, Modal, ModalBody, ModalContent, useDisclosure } from "@nextui-org/react";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-
-const recentSearches = [
-  "The Hobbit",
-  "The Lord of the Rings The Lord of the Rings The Lord of the Rings The Lord of the Rings",
-  "The Silmarillion",
-];
+import React, { useState } from "react";
 
 interface Props {
   setNavbarMenuChange: (e: boolean) => void;
   navbarMenuChange: boolean;
+  recentSearches: string[];
+
+  setSearches: (searchTerm: string) => void;
 }
 
-const Searchbar = ({ setNavbarMenuChange, navbarMenuChange }: Props) => {
+const Searchbar = ({ setNavbarMenuChange, recentSearches, setSearches }: Props) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [searchQuery, setSearchQuery] = useState("");
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
   const router = useRouter();
 
   const handleSearchChange = (e: string) => {
@@ -29,17 +26,9 @@ const Searchbar = ({ setNavbarMenuChange, navbarMenuChange }: Props) => {
 
   const handleClick = (searchTerm: string) => {
     onOpenChange();
-    setRecentSearches((prev) => {
-      const newRecentSearches = prev.filter((item) => item !== searchTerm);
-      newRecentSearches.push(searchTerm);
-
-      if (newRecentSearches.length > 5) {
-        newRecentSearches.shift();
-      }
-      return newRecentSearches;
-    });
+    setSearches(searchTerm);
     setSearchQuery("");
-    navbarMenuChange && setNavbarMenuChange(false);
+    setNavbarMenuChange(false);
     router.push(`/search?q=${searchTerm}`);
   };
 

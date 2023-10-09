@@ -37,11 +37,11 @@ export default function Home() {
 
   useEffect(() => {
     if (!routeSearchParams.get("q")) {
-      console.log("No search query");
+      // console.log("No search query");
       return;
     }
 
-    console.log("searching for books");
+    // console.log("searching for books");
     setQueryEnabled(true);
     return () => setQueryEnabled(false); // cleanup
   }, [routeSearchParams]);

@@ -44,7 +44,7 @@ const RemoveButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
   });
 
   function handleRemoveFromLibrary(book: UserLibraryWithBookDetails) {
-    console.log("removing book from library");
+    // console.log("removing book from library");
     book.inLibrary = false;
     removeBook(book);
     setIsConfirming(false);
@@ -56,7 +56,7 @@ const RemoveButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
       return;
     }
 
-    console.log("confirming removal from library");
+    // console.log("confirming removal from library");
     setIsConfirming(true);
 
     // book.inLibrary = false;

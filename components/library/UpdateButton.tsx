@@ -13,11 +13,8 @@ interface Props {
 }
 
 const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, currentPage }: Props) => {
-  console.log("🚀 ~ file: UpdateButton.tsx:16 ~ UpdateProgressButton ~ currentPage:", currentPage);
-  console.log(
-    "🚀 ~ file: UpdateButton.tsx:16 ~ UpdateProgressButton ~ currentPage:",
-    typeof currentPage
-  );
+  // console.log("🚀 ~ file: UpdateButton.tsx:16 ~ UpdateProgressButton ~ currentPage:", currentPage);
+
   const utils = trpc.useContext();
   const { mutate: updateProgress, isLoading } = trpc.updateBookProgress.useMutation({
     onSuccess: () => {

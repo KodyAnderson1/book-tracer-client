@@ -14,7 +14,7 @@ export function BookCard({ book, setSelectedBook, setIsModalOpen }: Props) {
 
   return (
     <div
-      className="group relative h-full cursor-pointer w-full "
+      className="group relative h-full cursor-pointer w-full"
       onClick={() => {
         setSelectedBook(book);
         setIsModalOpen(true);
