@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from '@vercel/analytics/react';
 
 import "react-loading-skeleton/dist/skeleton.css"
 
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <footer className="w-full flex items-center justify-center py-3">Footer Things</footer>
           </div>
         </Providers>
+        <Analytics />
       </body>
       </ClerkProvider>
     </html>

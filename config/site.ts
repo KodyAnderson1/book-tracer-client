@@ -16,6 +16,10 @@ export const siteConfig = {
       label: "Profile",
       href: "/profile",
     },
+    {
+      label: "Challenges",
+      href: "/challenges",
+    },
   ],
   navMenuItems: [
     {
@@ -31,12 +35,8 @@ export const siteConfig = {
       href: "/profile",
     },
     {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
+      label: "Challenges",
+      href: "/challenges",
     },
   ],
   links: {
