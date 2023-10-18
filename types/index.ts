@@ -32,6 +32,8 @@ export type EndpointFunctionsServer = {
   REMOVE_BOOK: () => string;
   GET_BOOK: () => string;
   NEW_USER: () => string;
+  GET_BADGES: () => string;
+  GET_CHALLENGES: () => string;
 };
 
 export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
@@ -44,4 +46,6 @@ export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
   SINGLE: (id) => `/users/${id}`,
   LOGIN: (id) => `/login/${id}`,
   NEW_USER: () => `/users/signup`,
+  GET_BADGES: () => `/gamification/badges`,
+  GET_CHALLENGES: () => `/gamification/challenge`,
 };

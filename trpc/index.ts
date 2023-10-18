@@ -3,6 +3,8 @@ import { protectedProcedure, router } from "./trpc";
 
 import { AGGREGATE_SERVICE } from "@/types";
 import {
+  Badge,
+  BadgeResponse,
   CustomUser,
   SaveBookResponse,
   UpdateProgress,
@@ -13,7 +15,6 @@ import {
   SearchSchema,
   UpdateProgressSchema,
   UserLibraryWithBookDetailsSchema,
-  deleteUserBookSchema,
 } from "@/types/zodSchemas";
 import { TRPCError } from "@trpc/server";
 import { getJWTToken } from "@/lib/utils";
@@ -161,6 +162,20 @@ export const appRouter = router({
       // console.log(results.data);
       return results.data as UpdateProgress;
     }),
+  getUserBadges: protectedProcedure.query(async ({ ctx }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    const variable = await new APIBuilder<any, { [key: string]: Badge[] }>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_BADGES)
+      .execute();
+
+    return variable.data;
+  }),
 
   alwaysFail: protectedProcedure.query(async ({ ctx }) => {
     const { token, userId } = ctx;

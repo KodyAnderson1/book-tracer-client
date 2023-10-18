@@ -11,6 +11,7 @@ import { trpc } from "@/app/_trpc/client";
 import { useUser } from "@clerk/nextjs";
 import { customToast } from "@/lib/client/utils";
 import { Loader2 } from "lucide-react";
+import { CustomLoading } from "../CustomLoading";
 
 const Library = () => {
   const { user, isLoaded, isSignedIn } = useUser();
@@ -67,20 +68,11 @@ const Library = () => {
 
   if (isLoading) {
     return (
-      <section className="flex flex-col h-screen px-4 md:px-0">
-        <header>
-          <h1 className={title({ className: "text-background-foreground", size: "sm" })}>
-            Your Library
-          </h1>
-          <h2 className={subtitle({ className: "text-background-foreground" })}>
-            Welcome,&nbsp;
-            <span className="font-semibold">{user.firstName || user.username || "User"}</span>
-          </h2>
-        </header>
-        <div className="flex-grow flex justify-center items-center">
-          <Loader2 absoluteStrokeWidth={true} height={120} width={120} className="animate-spin" />
-        </div>
-      </section>
+      <CustomLoading
+        header="Your Library"
+        isLoading={isLoading}
+        user={user.firstName || user.username || "User"}
+      />
     );
   }
 

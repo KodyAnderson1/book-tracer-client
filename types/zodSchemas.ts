@@ -135,3 +135,35 @@ export const ChallengeSchema = z.object({
 });
 
 export const ChallengesSchema = z.array(ChallengeSchema);
+
+export const Badge = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  threshold: z.number(),
+  type: z.enum([
+    "PAGES",
+    "ENGAGEMENT",
+    "COMPLETION",
+    "STREAK",
+    "FRIENDS",
+    "CHALLENGES",
+    "COLLECTOR",
+    "BOOKS",
+  ]),
+  tier: z.number(),
+  imageUrl: z.string(),
+  pointsAwarded: z.number(),
+  dateEarned: z.union([z.string().nullable(), z.null()]),
+});
+
+export const BadgeResponse = z.object({
+  Pages: z.array(Badge),
+  Engagement: z.array(Badge),
+  Completion: z.array(Badge),
+  Streak: z.array(Badge),
+  Friends: z.array(Badge),
+  Challenges: z.array(Badge),
+  Collector: z.array(Badge),
+  Books: z.array(Badge),
+});

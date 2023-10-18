@@ -131,3 +131,34 @@ export interface Challenge {
 }
 
 export type Challenges = Challenge[];
+
+export interface Badge {
+  id: number;
+  name: string;
+  description: string;
+  threshold: number;
+  type:
+    | "PAGES"
+    | "ENGAGEMENT"
+    | "COMPLETION"
+    | "STREAK"
+    | "FRIENDS"
+    | "CHALLENGES"
+    | "COLLECTOR"
+    | "BOOKS";
+  tier: number;
+  imageUrl: string;
+  pointsAwarded: number;
+  dateEarned: string | null;
+}
+
+export interface BadgeResponse {
+  Pages: Badge[];
+  Engagement: Badge[];
+  Completion: Badge[];
+  Streak: Badge[];
+  Friends: Badge[];
+  Challenges: Badge[];
+  Collector: Badge[];
+  Books: Badge[];
+}

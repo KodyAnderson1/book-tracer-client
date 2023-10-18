@@ -347,7 +347,12 @@ const ChallengeCard = ({ challenge, setSelectedChallenge }: ChallengeCardProps) 
       </div>
       <div className="w-full md:w-3/4 flex flex-col justify-between p-4">
         <div>
-          <h2 className="font-bold text-lg">{challenge.name}</h2>
+          <div className="flex justify-between">
+            <h2 className="font-bold text-lg">{challenge.name}</h2>
+            <h3 className="font-bold ">
+              <span className="font-semibold text-md">Points:</span> {challenge.pointsAwarded}
+            </h3>
+          </div>
           {challenge.additionalInfo ? (
             <p className="text-sm text-text-accent">
               <span className="font-semibold">{challenge.additionalInfo?.done} </span>
