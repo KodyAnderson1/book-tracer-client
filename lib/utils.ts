@@ -25,3 +25,8 @@ export function readyAmazonLink(searchTerm: string, isISBN13: boolean): string {
 
   return baseURL + searchQuery + category;
 }
+
+export function capitalizeString(input: string): string {
+  const lowerCased = input.toLowerCase();
+  return lowerCased.charAt(0).toUpperCase() + lowerCased.slice(1);
+}

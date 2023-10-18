@@ -96,3 +96,38 @@ export interface UpdateProgress {
   bookId: string;
   currentPage: number;
 }
+
+/*********************************************** */
+
+export interface DateProgress {
+  progress: number;
+  daysCompleted: number;
+  daysRemaining: number;
+}
+
+export interface AdditionalInfo {
+  done: number;
+  toGo: number;
+  percentComplete: number;
+}
+
+export interface Challenge {
+  id: number;
+  userChallengeId: number;
+  name: string;
+  description: string;
+  frequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+  type: "STREAK" | "PAGES" | "BOOKS";
+  threshold: number;
+  duration: number;
+  challengeStartDate: string | null;
+  challengeEndDate: string | null;
+  pointsAwarded: number;
+  userChallengeStartDate: string | null;
+  userChallengeEndDate: string | null;
+  status: "STARTED_CHALLENGE" | null;
+  dateProgress: DateProgress | null;
+  additionalInfo: AdditionalInfo | null;
+}
+
+export type Challenges = Challenge[];

@@ -29,12 +29,21 @@ const Searchbar = ({ setNavbarMenuChange, recentSearches, setSearches }: Props) 
     setSearches(searchTerm);
     setSearchQuery("");
     setNavbarMenuChange(false);
-    router.push(`/search?q=${searchTerm}`);
+    router.push(`/books/search?q=${searchTerm}`);
   };
 
   return (
     <>
-      <Button
+      <button
+        aria-label="Search Button"
+        className="flex flex-col items-center w-full space-y-2 text-gray-300 hover:bg-primary-hover hover:text-white rounded-md p-2"
+        onClick={onOpen}>
+        <div>
+          <SearchIcon />
+        </div>
+        <div className="text-sm font-medium">Search</div>
+      </button>
+      {/* <Button
         startContent={
           <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
         }
@@ -42,7 +51,7 @@ const Searchbar = ({ setNavbarMenuChange, recentSearches, setSearches }: Props) 
         className="flex w-full md:w-64 justify-start text-foreground hover:text-foreground-hover focus:outline-none"
         onPress={onOpen}>
         Search...
-      </Button>
+      </Button> */}
       <Modal
         hideCloseButton
         isOpen={isOpen}

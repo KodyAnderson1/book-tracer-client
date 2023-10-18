@@ -6,7 +6,7 @@ import { UserLibraryWithBookDetails } from "@/types/BookSearch";
 import { useSearchParams } from "next/navigation";
 import { BookCard } from "@/components/BookCard";
 import { BookSearchModal } from "@/components/SearchResultsModal";
-import { trpc } from "../_trpc/client";
+import { trpc } from "../../_trpc/client";
 import { customToast } from "@/lib/client/utils";
 
 export default function Home() {
@@ -85,7 +85,7 @@ export default function Home() {
   }
 
   return (
-    <section className="flex flex-col px-4 md:px-0">
+    <section className="flex flex-col px-4 md:px-2">
       <header className="mb-4 md:mb-8">
         <h1 className={title({ className: "text-background-foreground", size: "sm" })}>
           Results for {routeSearchParams.get("q") ?? ""}
@@ -116,7 +116,9 @@ export default function Home() {
 
         {/* You might also like section */}
         <aside className="sticky top-20 h-[40rem] border-1 border-secondary p-4 rounded md:col-start-5 md:row-span-5">
-          <h3 className="text-center font-semibold text-lg mb-4">You might also like...</h3>
+          <h3 className="text-center font-semibold text-sm mb-4">
+            Check out what your frienda are reading!
+          </h3>
           <div className="flex flex-col gap-4 justify-center">
             {/* {Array.from({ length: 3 }, (_, i) => (
               <BookRecommendationCard key={i} />

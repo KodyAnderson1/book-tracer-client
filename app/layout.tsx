@@ -6,9 +6,9 @@ import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from "@vercel/analytics/react";
 
-import "react-loading-skeleton/dist/skeleton.css"
+import "react-loading-skeleton/dist/skeleton.css";
 
 export const metadata: Metadata = {
   title: {
@@ -32,19 +32,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {/* Other head content can also go here */}
       </head>
       <ClerkProvider>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="relative flex flex-col h-screen">
-            <Navbar />
-            <main className="md:ml-20 md:mr-10 pt-10 flex-grow">{children}</main>
-            <footer className="w-full flex items-center justify-center py-3">Footer Things</footer>
-          </div>
-        </Providers>
-        <Analytics />
-      </body>
+        <body className={cn("min-h-[90vh] bg-background font-sans antialiased", fontSans.variable)}>
+          <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+            <main className="lg:ml-12 flex-grow">{children}</main>
+          </Providers>
+          <Analytics />
+        </body>
       </ClerkProvider>
     </html>
   );

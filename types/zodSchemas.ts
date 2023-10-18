@@ -97,3 +97,41 @@ export const UpdateProgressSchema = z.object({
   bookId: z.string(),
   currentPage: z.number(),
 });
+
+/**********************************  */
+export const DateProgressSchema = z.object({
+  progress: z.number(),
+  daysCompleted: z.number(),
+  daysRemaining: z.number(),
+});
+
+export const AdditionalInfoSchema = z.object({
+  done: z.number(),
+  toGo: z.number(),
+  percentComplete: z.number(),
+});
+
+export const ChallengeSchema = z.object({
+  id: z.number(),
+  userChallengeId: z.number(),
+  name: z.string(),
+  description: z.string(),
+  frequency: z.union([
+    z.literal("DAILY"),
+    z.literal("WEEKLY"),
+    z.literal("MONTHLY"),
+    z.literal("YEARLY"),
+  ]),
+  type: z.union([z.literal("STREAK"), z.literal("PAGES"), z.literal("BOOKS")]),
+  threshold: z.number(),
+  challengeStartDate: z.union([z.string().nullable(), z.null()]),
+  challengeEndDate: z.union([z.string().nullable(), z.null()]),
+  pointsAwarded: z.number(),
+  userChallengeStartDate: z.union([z.string().nullable(), z.null()]),
+  userChallengeEndDate: z.union([z.string().nullable(), z.null()]),
+  status: z.union([z.literal("STARTED_CHALLENGE"), z.null()]),
+  dateProgress: z.union([DateProgressSchema, z.null()]),
+  additionalInfo: z.union([AdditionalInfoSchema, z.null()]),
+});
+
+export const ChallengesSchema = z.array(ChallengeSchema);

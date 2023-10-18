@@ -1,12 +1,13 @@
 "use client";
 
-import NextLink from "next/link";
-import { title, subtitle } from "@/components/primitives";
-import { SearchIcon } from "@/components/icons";
+import { subtitle, title } from "@/components/primitives";
 import { Button } from "@nextui-org/button";
+import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import React from "react";
+import NextLink from "next/link";
 
-export default function Home() {
+const Page = () => {
   const router = useRouter();
 
   router.push("/books/library");
@@ -30,4 +31,6 @@ export default function Home() {
       </div>
     </section>
   );
-}
+};
+
+export default Page;
