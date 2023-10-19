@@ -96,6 +96,12 @@ export const UpdateProgressSchema = z.object({
   clerkId: z.string(),
   bookId: z.string(),
   currentPage: z.number(),
+  pagesRead: z.number(),
+  action: z.union([
+    z.literal("STARTED_BOOK"),
+    z.literal("READ_PAGES"),
+    z.literal("COMPLETED_BOOK"),
+  ]),
 });
 
 /**********************************  */
@@ -155,6 +161,7 @@ export const Badge = z.object({
   imageUrl: z.string(),
   pointsAwarded: z.number(),
   dateEarned: z.union([z.string().nullable(), z.null()]),
+  additionalBadgeInfo: z.union([AdditionalInfoSchema, z.null()]),
 });
 
 export const BadgeResponse = z.object({

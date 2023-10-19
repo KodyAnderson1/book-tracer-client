@@ -146,6 +146,8 @@ export const appRouter = router({
           clerkId: userId,
           bookId: input.bookId,
           currentPage: input.currentPage,
+          pagesRead: input.pagesRead,
+          action: input.action,
         })
         .setToken(getJWTToken(realToken))
         .setEndpoint(AGGREGATE_SERVICE.SAVE_BOOK)

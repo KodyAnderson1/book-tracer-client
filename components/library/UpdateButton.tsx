@@ -32,17 +32,46 @@ const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, current
   });
 
   const handleUpdateProgress = () => {
+    let lastPageRead = 0;
+    let action: "STARTED_BOOK" | "READ_PAGES" | "COMPLETED_BOOK" = "STARTED_BOOK";
+
     if (!isValueChanged || currentPage === book.last_page_read) {
       setIsValueChanged(false);
       customToast("No Progress Change Detected.", "info");
       return;
     }
 
+    if (!book.page_count || book.page_count === 0) {
+      customToast("This book has no pages!", "error");
+      return;
+    }
+
+    if (!book.last_page_read) {
+      lastPageRead = 0;
+      action = "STARTED_BOOK";
+    } else {
+      lastPageRead = book.last_page_read;
+      action = "READ_PAGES";
+    }
+
+    if (currentPage >= book.page_count) {
+      action = "COMPLETED_BOOK";
+    }
+
+    if (currentPage < lastPageRead) {
+      customToast("You can't go back in time! Please enter a valid page number.", "error");
+      return;
+    }
+
+    // @ts-ignore
+    const currPage = currentPage[0] as number;
+
     updateProgress({
       bookId: book.book_id,
-      // @ts-ignore
-      currentPage: currentPage[0] as number,
+      currentPage: currPage,
       clerkId: "2134",
+      pagesRead: currPage - lastPageRead,
+      action: action,
     });
   };
 

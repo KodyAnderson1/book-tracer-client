@@ -95,6 +95,8 @@ export interface UpdateProgress {
   clerkId: string;
   bookId: string;
   currentPage: number;
+  pagesRead: number;
+  action: "STARTED_BOOK" | "READ_PAGES" | "COMPLETED_BOOK";
 }
 
 /*********************************************** */
@@ -150,6 +152,7 @@ export interface Badge {
   imageUrl: string;
   pointsAwarded: number;
   dateEarned: string | null;
+  additionalBadgeInfo: AdditionalInfo | null;
 }
 
 export interface BadgeResponse {

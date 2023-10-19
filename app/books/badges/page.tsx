@@ -49,18 +49,47 @@ const BadgeCard = ({ badge }: { badge: Badge }) => {
         <h4 className="text-lg font-bold text-center">{badge.name}</h4>
         <p className="text-sm text-gray-500 text-center">{badge.description}</p>
       </div>
-      <div className="mt-4 w-full text-center">
-        <span className="font-bold">{badge.pointsAwarded} Points</span>
-        {
-          badge.dateEarned ? <span className="ml-4 text-success">Earned</span> : null
-          // (
-          //   <span className="ml-4 text-gray-400">Not Earned</span>
-          // )
-        }
-      </div>
+
+      {badge.dateEarned ? (
+        <div className="mt-4 w-full text-center">
+          <span className="font-bold">{badge.pointsAwarded} Points</span>
+          {badge.dateEarned ? <span className="ml-4 text-success">Earned</span> : null}
+        </div>
+      ) : badge.additionalBadgeInfo ? (
+        <div className="mt-4 w-full text-center flex justify-between">
+          <span className="text-sm text-text">{badge.additionalBadgeInfo.done}</span>
+          <span className="font-bold">{badge.pointsAwarded} Points</span>
+          <span className="text-sm text-text">{badge.additionalBadgeInfo.toGo}</span>
+        </div>
+      ) : (
+        <div className="mt-4 w-full text-center">
+          <span className="font-bold">{badge.pointsAwarded} Points</span>
+          {badge.dateEarned ? <span className="ml-4 text-success">Earned</span> : null}
+        </div>
+      )}
+      {badge.additionalBadgeInfo ? (
+        <div className="w-full text-center">
+          {/* <span className="font-bold">{badge.additionalBadgeInfo.percentComplete}</span> */}
+          <div className="overflow-hidden h-2 -mb-1 text-xs flex rounded bg-background border border-secondary">
+            <div
+              style={{ width: `${badge.additionalBadgeInfo.percentComplete}%` }}
+              className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary"></div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
+
+// {badge.dateEarned ? <span className="ml-4 text-success">Earned</span> : null}
+
+{
+  /* <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-background border border-secondary">
+<div
+  style={{ width: `${challenge.additionalInfo?.percentComplete}%` }}
+  className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary"></div>
+</div> */
+}
 
 interface MyDividerProps {
   className?: string;
