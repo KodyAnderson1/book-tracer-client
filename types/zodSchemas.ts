@@ -174,3 +174,86 @@ export const BadgeResponse = z.object({
   Collector: z.array(Badge),
   Books: z.array(Badge),
 });
+
+export const BadgeType = z.enum([
+  "Pages",
+  "Friends",
+  "Streak",
+  "Books",
+  "Engagement",
+  "Collector",
+  "Completion",
+  "Challenges",
+]);
+
+export const ActivityAction = z.enum([
+  "STARTED_BOOK",
+  "COMPLETED_BOOK",
+  "ADDED_BOOK",
+  "DELETED_BOOK",
+  "STARTED_CHALLENGE",
+  "COMPLETED_CHALLENGE",
+  "FAILED_CHALLENGE",
+  "ABANDONED_CHALLENGE",
+  "EARNED_BADGE",
+  "EARNED_POINTS",
+  "READ_PAGES",
+]);
+
+export const ChallengeFrequency = z.enum(["Daily", "Weekly", "Monthly", "Yearly"]);
+
+export const AdditionalStatus = z.object({
+  statusCode: z.string(),
+  statusDescription: z.string(),
+});
+
+export const AdditionalChallengeInfo = z.object({
+  done: z.number(),
+  toGo: z.number(),
+  percentComplete: z.number(),
+});
+
+export const BadgeWithNext = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  threshold: z.number(),
+  type: BadgeType,
+  tier: z.number(),
+  imageUrl: z.string(),
+  pointsAwarded: z.number(),
+  nextBadge: Badge,
+});
+
+export const DateProgress = z.object({
+  progress: z.number(),
+  daysCompleted: z.number(),
+  daysRemaining: z.number(),
+});
+
+export const UserChallengesExtraDTO = z.object({
+  id: z.number(),
+  userChallengeId: z.number(),
+  name: z.string(),
+  description: z.string(),
+  frequency: ChallengeFrequency,
+  type: BadgeType,
+  threshold: z.number(),
+  duration: z.number(),
+  challengeStartDate: z.date(),
+  challengeEndDate: z.date(),
+  pointsAwarded: z.number(),
+  userChallengeStartDate: z.date(),
+  userChallengeEndDate: z.date(),
+  status: ActivityAction,
+  dateProgress: DateProgress,
+  additionalInfo: AdditionalChallengeInfo,
+});
+
+export const Status = z.object({
+  statusCode: z.string(),
+  statusDescription: z.string(),
+  additionalStatuses: z.array(AdditionalStatus).nullable(),
+  badgesEarned: z.array(BadgeWithNext).nullable(),
+  challenges: z.array(UserChallengesExtraDTO).nullable(),
+});

@@ -34,6 +34,7 @@ export type EndpointFunctionsServer = {
   NEW_USER: () => string;
   GET_BADGES: () => string;
   GET_CHALLENGES: () => string;
+  GET_LATEST_ACHIEVEMENTS: () => string;
 };
 
 export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
@@ -48,4 +49,5 @@ export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
   NEW_USER: () => `/users/signup`,
   GET_BADGES: () => `/gamification/badges`,
   GET_CHALLENGES: () => `/gamification/challenge`,
+  GET_LATEST_ACHIEVEMENTS: () => `/gamification/achievements`,
 };

@@ -3,10 +3,12 @@ import { protectedProcedure, router } from "./trpc";
 
 import { AGGREGATE_SERVICE } from "@/types";
 import {
+  Achievement,
   Badge,
   BadgeResponse,
   CustomUser,
   SaveBookResponse,
+  Status,
   UpdateProgress,
   UserLibraryWithBookDetails,
 } from "@/types/BookSearch";
@@ -19,6 +21,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import { getJWTToken } from "@/lib/utils";
 import { APIErrorHandler, ErrorResponse } from "@/lib/server/APIErrorHandler";
+import { MOCK_RETURN_DATA } from "@/lib/client/MockData";
 
 const SERVICE = process.env.AGGREGATE_SERVICE || "";
 
@@ -141,7 +144,7 @@ export const appRouter = router({
 
       // console.log("INSIDE QUERY: updateBookProgress");
       if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
-      let results = await new APIBuilder<UpdateProgress, UpdateProgress>(SERVICE)
+      let results = await new APIBuilder<UpdateProgress, Status>(SERVICE)
         .patch({
           clerkId: userId,
           bookId: input.bookId,
@@ -162,8 +165,10 @@ export const appRouter = router({
       }
 
       // console.log(results.data);
-      return results.data as UpdateProgress;
+      return results.data as Status;
+      // return MOCK_RETURN_DATA;
     }),
+
   getUserBadges: protectedProcedure.query(async ({ ctx }) => {
     const { userId, auth, token } = ctx;
     const realToken = await token;
@@ -174,6 +179,21 @@ export const appRouter = router({
       .get()
       .setToken(getJWTToken(realToken))
       .setEndpoint(AGGREGATE_SERVICE.GET_BADGES)
+      .execute();
+
+    return variable.data;
+  }),
+
+  getUserLatestAchievements: protectedProcedure.query(async ({ ctx }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    const variable = await new APIBuilder<any, Achievement[]>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_LATEST_ACHIEVEMENTS)
       .execute();
 
     return variable.data;

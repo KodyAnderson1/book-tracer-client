@@ -165,3 +165,94 @@ export interface BadgeResponse {
   Collector: Badge[];
   Books: Badge[];
 }
+
+/*********************************************** */
+export interface Status {
+  statusCode: string;
+  statusDescription: string;
+  additionalStatuses: AdditionalStatus[] | null;
+  badgesEarned: BadgeWithNext[] | null;
+  challenges: UserChallengesExtraDTO[] | null;
+}
+
+export interface UserChallengesExtraDTO {
+  id: number;
+  userChallengeId: number;
+  name: string;
+  description: string;
+  frequency: ChallengeFrequency | string;
+  type: BadgeType | string;
+  threshold: number;
+  duration: number;
+  challengeStartDate: string | null;
+  challengeEndDate: string | null;
+  pointsAwarded: number;
+  userChallengeStartDate: string | null;
+  userChallengeEndDate: string | null;
+  status: ActivityAction;
+  dateProgress: DateProgress;
+  additionalInfo: AdditionalChallengeInfo;
+}
+
+export interface AdditionalChallengeInfo {
+  done: number;
+  toGo: number;
+  percentComplete: number;
+}
+
+export interface AdditionalStatus {
+  statusCode: string;
+  statusDescription: string;
+}
+
+export interface BadgeWithNext {
+  id: number;
+  name: string;
+  description: string;
+  threshold: number;
+  type: BadgeType;
+  tier: number;
+  imageUrl: string;
+  pointsAwarded: number;
+  nextBadge: Badge;
+}
+
+export enum BadgeType {
+  PAGES = "Pages",
+  FRIENDS = "Friends",
+  STREAK = "Streak",
+  BOOKS = "Books",
+  ENGAGEMENT = "Engagement",
+  COLLECTOR = "Collector",
+  COMPLETION = "Completion",
+  CHALLENGES = "Challenges",
+}
+
+export enum ActivityAction {
+  STARTED_BOOK = "STARTED_BOOK",
+  COMPLETED_BOOK = "COMPLETED_BOOK",
+  ADDED_BOOK = "ADDED_BOOK",
+  DELETED_BOOK = "DELETED_BOOK",
+  STARTED_CHALLENGE = "STARTED_CHALLENGE",
+  COMPLETED_CHALLENGE = "COMPLETED_CHALLENGE",
+  FAILED_CHALLENGE = "FAILED_CHALLENGE",
+  ABANDONED_CHALLENGE = "ABANDONED_CHALLENGE",
+  EARNED_BADGE = "EARNED_BADGE",
+  EARNED_POINTS = "EARNED_POINTS",
+  READ = "READ_PAGES",
+}
+
+export enum ChallengeFrequency {
+  DAILY = "Daily",
+  WEEKLY = "Weekly",
+  MONTHLY = "Monthly",
+  YEARLY = "Yearly",
+}
+
+export interface Achievement {
+  name: string;
+  type: "Badge" | "Challenge";
+  description: string;
+  threshold: number;
+  dateEarned: string;
+}

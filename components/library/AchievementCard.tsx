@@ -1,5 +1,7 @@
+import { trpc } from "@/app/_trpc/client";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { format } from "date-fns";
 
 const achievementsData = [
   {
@@ -20,25 +22,28 @@ const achievementsData = [
 ];
 
 const AchievementCard = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(true);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [isError, setIsError] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
 
-  const loadData = () => {
-    setIsLoading(true);
+  const {
+    data: userAchievements,
+    isLoading,
+    isError,
+    refetch,
+  } = trpc.getUserLatestAchievements.useQuery(undefined, {
+    retry: 3,
 
-    // Simulate an API call with a timeout
-    setTimeout(() => {
-      setIsError(true);
-      setIsLoading(false);
+    onError: () => {
+      setRetryCount((prev) => prev + 1);
+    },
+  });
 
-      setRetryCount((prevCount) => prevCount + 1);
-    }, 2000);
+  const handleRetry = () => {
+    if (retryCount < 3) {
+      refetch();
+    }
   };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   if (isLoading) {
     return (
@@ -57,10 +62,7 @@ const AchievementCard = () => {
           <>
             <AlertTriangle className="text-warning w-10 h-10 mb-2" />
             <span className="text-warning font-semibold">Failed to load achievements</span>
-            <button
-              // onClick={handleRetry}
-              onClick={loadData}
-              className="text-blue-500 cursor-pointer hover:underline">
+            <button onClick={handleRetry} className="text-blue-500 cursor-pointer hover:underline">
               Click here to retry
             </button>
           </>
@@ -76,20 +78,34 @@ const AchievementCard = () => {
     );
   }
 
+  if (!userAchievements) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <AlertTriangle className="text-danger w-10 h-10 mb-2" />
+        <span className="text-danger font-semibold">Failed to load achievements</span>
+        <span className="text-danger">No data available.</span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full">
-      <h3 className="font-bold mb-2 w-full">Your Latest Achievements...</h3>
+      <h3 className="font-bold mb-2 w-full">Your Latest Achievements</h3>
       <div className="flex-grow">
-        {achievementsData.map((achievement, i) => (
+        {userAchievements.map((achievement, i) => (
           <div className="pt-2" key={i}>
             <div className="flex justify-between">
-              <h3 className="font-bold text-md text-background-foreground">{achievement.name}</h3>
+              <h3 className="font-bold text-md text-background-foreground truncate">
+                {achievement.name}
+              </h3>
               <div className="text-xs">
-                <span className="font-semibold">{achievement.dateRecieved}</span>
+                <span className="font-semibold">
+                  {format(new Date(achievement.dateEarned), "MMM dd, yyy")}
+                </span>
               </div>
             </div>
             <p className="text-sm text-opacity-80 text-background-foreground font-medium">
-              Level {achievement.level}
+              {achievement.description}
             </p>
           </div>
         ))}

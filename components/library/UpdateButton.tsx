@@ -1,9 +1,15 @@
 import { trpc } from "@/app/_trpc/client";
 import { customToast } from "@/lib/client/utils";
-import { UserLibraryWithBookDetails } from "@/types/BookSearch";
+import {
+  BadgeWithNext,
+  UserChallengesExtraDTO,
+  UserLibraryWithBookDetails,
+} from "@/types/BookSearch";
 import { Button } from "@nextui-org/button";
+import { useDisclosure } from "@nextui-org/react";
 import { Check } from "lucide-react";
 import React from "react";
+import EarnedRewardsModal, { Reward } from "../EarnedRewardsModal";
 
 interface Props {
   book: UserLibraryWithBookDetails;
@@ -13,21 +19,72 @@ interface Props {
 }
 
 const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, currentPage }: Props) => {
-  // console.log("🚀 ~ file: UpdateButton.tsx:16 ~ UpdateProgressButton ~ currentPage:", currentPage);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const [rewards, setRewards] = React.useState<Reward[] | null>(null);
 
   const utils = trpc.useContext();
   const { mutate: updateProgress, isLoading } = trpc.updateBookProgress.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       utils.getUserLibrary.invalidate();
+      console.log("🚀 ~ file: UpdateButton.tsx:31 ~ onSaved: ~ data", data);
+
+      // @ts-ignore
+      const badgesToReward: Reward[] = data.badgesEarned.map((badge: BadgeWithNext) => {
+        return {
+          name: badge.name,
+          description: badge.description,
+          imageUrl: badge.imageUrl,
+          points: badge.pointsAwarded,
+          type: badge.type,
+          threshold: badge.threshold,
+          tier: badge.tier,
+          parentType: "Badge",
+        };
+      });
+
+      // @ts-ignore
+      const challengesToReward: Reward[] = data.challenges
+        .filter(
+          (item) => item.status === "COMPLETED_CHALLENGE" || item.status === "FAILED_CHALLENGE"
+        )
+        .map(
+          // @ts-ignore
+          (challenge: UserChallengesExtraDTO) => {
+            return {
+              name: challenge.name,
+              description: challenge.description,
+              points: challenge.pointsAwarded,
+              type: challenge.type,
+              threshold: challenge.threshold,
+              status: challenge.status,
+              duration: challenge.duration,
+              parentType: "Challenge",
+            };
+          }
+        );
+
+      const rewards = [...badgesToReward, ...challengesToReward];
+      const sortedRewards = rewards.sort((a, b) => {
+        if (a.status === "FAILED_CHALLENGE") return 1;
+        if (b.status === "FAILED_CHALLENGE") return -1;
+        return 0;
+      });
+
+      setRewards(sortedRewards);
+
+      // console.log("🚀 ~ file: UpdateButton.tsx:80 ~ onSaved: ~ rewards", rewards);
+
+      if (rewards && rewards.length > 0) {
+        onOpen();
+      }
+
       setIsValueChanged(false);
       customToast("Successfully updated progress.", "success");
     },
     onError: (err: any) => {
       console.error(err);
       customToast("Uh oh! The book did not get updated! Try again later", "error");
-    },
-    onSettled: () => {
-      // setIsLoading(false);
     },
   });
 
@@ -76,16 +133,22 @@ const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, current
   };
 
   return (
-    <Button
-      startContent={isLoading ? null : <Check />}
-      isDisabled={!isValueChanged}
-      isLoading={isLoading}
-      color="primary"
-      onClick={handleUpdateProgress}
-      fullWidth
-      className="text-white py-2 rounded h-8 flex justify-center items-center">
-      Update Progress
-    </Button>
+    <>
+      {rewards && rewards.length > 0 && (
+        <EarnedRewardsModal reward={rewards} isOpen={isOpen} onOpenChange={onOpenChange} />
+      )}
+
+      <Button
+        startContent={isLoading ? null : <Check />}
+        // isDisabled={!isValueChanged}
+        isLoading={isLoading}
+        color="primary"
+        onClick={handleUpdateProgress}
+        fullWidth
+        className="text-white py-2 rounded h-8 flex justify-center items-center">
+        Update Progress
+      </Button>
+    </>
   );
 };
 
