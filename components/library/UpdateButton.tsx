@@ -27,7 +27,6 @@ const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, current
   const { mutate: updateProgress, isLoading } = trpc.updateBookProgress.useMutation({
     onSuccess: (data) => {
       utils.getUserLibrary.invalidate();
-      console.log("🚀 ~ file: UpdateButton.tsx:31 ~ onSaved: ~ data", data);
 
       // @ts-ignore
       const badgesToReward: Reward[] = data.badgesEarned.map((badge: BadgeWithNext) => {
@@ -43,14 +42,13 @@ const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, current
         };
       });
 
-      // @ts-ignore
-      const challengesToReward: Reward[] = data.challenges
-        .filter(
-          (item) => item.status === "COMPLETED_CHALLENGE" || item.status === "FAILED_CHALLENGE"
-        )
-        .map(
-          // @ts-ignore
-          (challenge: UserChallengesExtraDTO) => {
+      const challengesToReward: Reward[] | null =
+        data.challenges &&
+        data.challenges
+          .filter(
+            (item) => item.status === "COMPLETED_CHALLENGE" || item.status === "FAILED_CHALLENGE"
+          )
+          .map((challenge: UserChallengesExtraDTO) => {
             return {
               name: challenge.name,
               description: challenge.description,
@@ -61,10 +59,9 @@ const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, current
               duration: challenge.duration,
               parentType: "Challenge",
             };
-          }
-        );
+          });
 
-      const rewards = [...badgesToReward, ...challengesToReward];
+      const rewards = [...badgesToReward, ...(challengesToReward ?? [])];
       const sortedRewards = rewards.sort((a, b) => {
         if (a.status === "FAILED_CHALLENGE") return 1;
         if (b.status === "FAILED_CHALLENGE") return -1;

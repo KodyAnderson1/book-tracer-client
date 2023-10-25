@@ -1,13 +1,11 @@
 "use client";
 
 import { Button } from "@nextui-org/button";
-import { Progress } from "@nextui-org/react";
-import { parseISO, format } from "date-fns";
 import { capitalizeString } from "@/lib/utils";
-import { Challenge, Challenges } from "@/types/BookSearch";
+import { Challenge, UserChallengesExtraDTO } from "@/types/BookSearch";
 import Image from "next/image";
 import { Clock, Flame, Sunrise, TargetIcon, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useMediaQuery from "@/components/useMediaQuery";
 import {
   Sheet,
@@ -18,6 +16,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { subtitle, title } from "@/components/primitives";
+import { trpc } from "@/app/_trpc/client";
+import { customToast } from "@/lib/client/utils";
 
 function determineWord(type: string): string {
   switch (type) {
@@ -26,145 +26,35 @@ function determineWord(type: string): string {
     case "BOOKS":
       return "books";
     case "STREAK":
-      return "days";
+      return "pages";
     default:
       return "days";
   }
 }
 
-const mockData: Challenges = [
-  {
-    id: 1,
-    userChallengeId: 2,
-    name: "Daily Reading Challenge",
-    description: "Read every day for a week",
-    frequency: "DAILY",
-    type: "STREAK",
-    threshold: 7,
-    duration: 7,
-    challengeStartDate: null,
-    challengeEndDate: null,
-    pointsAwarded: 50,
-    userChallengeStartDate: "2023-10-11T22:56:30.158199",
-    userChallengeEndDate: "2023-10-17T23:59:59",
-    status: "STARTED_CHALLENGE",
-    dateProgress: {
-      progress: 85.71428571428571,
-      daysCompleted: 6,
-      daysRemaining: 1,
-    },
-    additionalInfo: {
-      done: 6.0,
-      toGo: 1.0,
-      percentComplete: 85.71428571428571,
-    },
-  },
-  {
-    id: 2,
-    userChallengeId: 3,
-    name: "Weekly Reading Challenge",
-    description: "Read at least 250 pages in a week",
-    frequency: "WEEKLY",
-    type: "PAGES",
-    threshold: 250,
-    duration: 7,
-    challengeStartDate: null,
-    challengeEndDate: null,
-    pointsAwarded: 100,
-    userChallengeStartDate: "2023-10-12T10:00:00",
-    userChallengeEndDate: "2023-10-18T23:59:59",
-    status: "STARTED_CHALLENGE",
-    dateProgress: {
-      progress: 71.42857142857143,
-      daysCompleted: 5,
-      daysRemaining: 2,
-    },
-    additionalInfo: {
-      done: 180.0,
-      toGo: 70.0,
-      percentComplete: 72.0,
-    },
-  },
-  {
-    id: 3,
-    userChallengeId: 4,
-    name: "Monthly Reading Challenge",
-    description: "Read 5 books in a month",
-    frequency: "MONTHLY",
-    type: "BOOKS",
-    threshold: 5,
-    duration: 30,
-    challengeStartDate: null,
-    challengeEndDate: null,
-    pointsAwarded: 500,
-    userChallengeStartDate: null,
-    userChallengeEndDate: null,
-    status: null,
-    dateProgress: null,
-    additionalInfo: null,
-  },
-];
-
-const mockDataSpecial: Challenges = [
-  {
-    id: 1,
-    userChallengeId: 2,
-    name: "Daily Reading Challenge",
-    description: "Read every day for a week",
-    frequency: "DAILY",
-    type: "STREAK",
-    threshold: 7,
-    duration: 7,
-    challengeStartDate: null,
-    challengeEndDate: null,
-    pointsAwarded: 500,
-    userChallengeStartDate: null,
-    userChallengeEndDate: null,
-    status: null,
-    dateProgress: null,
-    additionalInfo: null,
-  },
-  {
-    id: 2,
-    userChallengeId: 3,
-    name: "Weekly Reading Challenge",
-    description: "Read at least 250 pages in a week",
-    frequency: "WEEKLY",
-    type: "PAGES",
-    threshold: 250,
-    duration: 7,
-    challengeStartDate: null,
-    challengeEndDate: null,
-    pointsAwarded: 500,
-    userChallengeStartDate: null,
-    userChallengeEndDate: null,
-    status: null,
-    dateProgress: null,
-    additionalInfo: null,
-  },
-  {
-    id: 3,
-    userChallengeId: 4,
-    name: "Monthly Reading Challenge",
-    description: "Read 5 books in a month",
-    frequency: "MONTHLY",
-    type: "BOOKS",
-    threshold: 5,
-    duration: 30,
-    challengeStartDate: null,
-    challengeEndDate: null,
-    pointsAwarded: 500,
-    userChallengeStartDate: null,
-    userChallengeEndDate: null,
-    status: null,
-    dateProgress: null,
-    additionalInfo: null,
-  },
-];
-
 const Page = () => {
-  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+  const [selectedChallenge, setSelectedChallenge] = useState<UserChallengesExtraDTO | null>(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const { data: challenges, isLoading } = trpc.getChallenges.useQuery();
+
+  useEffect(() => {
+    if (!challenges) {
+      return;
+    }
+
+    if (challenges.length > 0) {
+      setSelectedChallenge(challenges[0]);
+    }
+  }, [challenges]);
+
+  if (!challenges) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">LOADING...</div>;
+  }
 
   return (
     <section className="gap-4 py-8 flex flex-col md:flex-row h-screen relative">
@@ -177,7 +67,7 @@ const Page = () => {
 
         {isMobile ? (
           <div className="flex flex-col justify-center">
-            {mockData.map((challenge) => (
+            {challenges.map((challenge) => (
               <Sheet key={challenge.id}>
                 <SheetTrigger>
                   <ChallengeCard
@@ -234,27 +124,13 @@ const Page = () => {
           </div>
         ) : (
           <>
-            {/* <div className="mb-4 mt-2">
-              <h2 className={subtitle({ className: "text-background-foreground" })}>
-                Timed Challenges
-              </h2>
-            </div>
-            <div className="md:pr-20">
-              {mockDataSpecial.map((challenge) => (
-                <ChallengeCard
-                  key={challenge.id}
-                  challenge={challenge}
-                  setSelectedChallenge={setSelectedChallenge}
-                />
-              ))}
-            </div> */}
             <div className="mb-4">
               <h2 className={subtitle({ className: "text-background-foreground" })}>
                 Persistent Challenges
               </h2>
             </div>
             <div className="md:pr-20">
-              {mockData.map((challenge) => (
+              {challenges.map((challenge) => (
                 <ChallengeCard
                   key={challenge.id}
                   challenge={challenge}
@@ -266,13 +142,46 @@ const Page = () => {
         )}
       </div>
       <div className="hidden md:block md:w-1/2 -ml-4 md:border-l md:border-background-foreground bg-background-card -mt-12">
-        <ChallengeInformation challenge={selectedChallenge ?? mockData[0]} />
+        <ChallengeInformation
+          // @ts-ignore
+          challenge={selectedChallenge}
+          // @ts-ignore
+          setSelectedChallenge={setSelectedChallenge}
+        />
       </div>
     </section>
   );
 };
 
-const ChallengeInformation = ({ challenge }: { challenge: Challenge }) => {
+interface InformationProps {
+  challenge: Challenge;
+}
+
+const ChallengeInformation = ({ challenge }: InformationProps) => {
+  const utils = trpc.useContext();
+
+  const { mutate: updateChallenge } = trpc.addChallenge.useMutation({
+    onSuccess: (data) => {
+      utils.getChallenges.invalidate();
+      customToast("Challenge started!", "success");
+    },
+    onError: (error) => {
+      customToast("Error starting challenge.", "error");
+      console.error("🚀 ~ file: page.tsx:220 ~ onError: ~ error", error);
+    },
+  });
+
+  function addChallenge() {
+    updateChallenge({
+      challengeId: challenge.id,
+      clerkId: "1234",
+    });
+  }
+
+  if (!challenge) {
+    return null;
+  }
+
   return (
     <div className="pt-2 px-4 flex flex-col h-full">
       <div className="h-1/2 flex justify-center ">
@@ -311,11 +220,11 @@ const ChallengeInformation = ({ challenge }: { challenge: Challenge }) => {
           </div>
           <div className="p-2 mt-36">
             {challenge.status === "STARTED_CHALLENGE" ? (
-              <Button startContent={<Trash2 />} color="danger" fullWidth>
+              <Button isDisabled startContent={<Trash2 />} color="danger" fullWidth>
                 Abandon Challenge
               </Button>
             ) : (
-              <Button color="primary" fullWidth>
+              <Button color="primary" fullWidth onPress={addChallenge}>
                 Start Challenge
               </Button>
             )}
@@ -327,8 +236,8 @@ const ChallengeInformation = ({ challenge }: { challenge: Challenge }) => {
 };
 
 interface ChallengeCardProps {
-  challenge: Challenge;
-  setSelectedChallenge: (challenge: Challenge) => void;
+  challenge: UserChallengesExtraDTO;
+  setSelectedChallenge: (challenge: UserChallengesExtraDTO) => void;
 }
 
 const ChallengeCard = ({ challenge, setSelectedChallenge }: ChallengeCardProps) => {

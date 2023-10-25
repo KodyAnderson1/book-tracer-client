@@ -257,3 +257,8 @@ export const Status = z.object({
   badgesEarned: z.array(BadgeWithNext).nullable(),
   challenges: z.array(UserChallengesExtraDTO).nullable(),
 });
+
+export const AddChallengeSchema = z.object({
+  challengeId: z.number(),
+  clerkId: z.string(),
+});

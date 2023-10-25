@@ -10,9 +10,11 @@ import {
   SaveBookResponse,
   Status,
   UpdateProgress,
+  UserChallengesExtraDTO,
   UserLibraryWithBookDetails,
 } from "@/types/BookSearch";
 import {
+  AddChallengeSchema,
   CustomUserSchema,
   SearchSchema,
   UpdateProgressSchema,
@@ -194,6 +196,54 @@ export const appRouter = router({
       .get()
       .setToken(getJWTToken(realToken))
       .setEndpoint(AGGREGATE_SERVICE.GET_LATEST_ACHIEVEMENTS)
+      .execute();
+
+    return variable.data;
+  }),
+
+  getChallenges: protectedProcedure.query(async ({ ctx }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    const variable = await new APIBuilder<any, UserChallengesExtraDTO[]>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_CHALLENGES)
+      .execute();
+
+    return variable.data;
+  }),
+
+  addChallenge: protectedProcedure.input(AddChallengeSchema).mutation(async ({ ctx, input }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    const variable = await new APIBuilder<any, UserChallengesExtraDTO[]>(SERVICE)
+      .post({
+        clerkId: userId,
+        challengeId: input.challengeId,
+      })
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_CHALLENGES)
+      .execute();
+
+    return variable.data;
+  }),
+
+  getUserPoints: protectedProcedure.query(async ({ ctx }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    const variable = await new APIBuilder<any, number>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_POINTS)
       .execute();
 
     return variable.data;

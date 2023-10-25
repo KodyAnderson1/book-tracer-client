@@ -4,7 +4,16 @@ import Searchbar from "@/components/Searchbar";
 import { Logo } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { Award, BookIcon, GithubIcon, HomeIcon, Menu, Settings, SwordsIcon } from "lucide-react";
+import {
+  Award,
+  BarChart2,
+  BookIcon,
+  GithubIcon,
+  HomeIcon,
+  Menu,
+  Settings,
+  SwordsIcon,
+} from "lucide-react";
 import React, { useState } from "react";
 import NextLink from "next/link";
 import { Link } from "@nextui-org/link";
@@ -97,6 +106,18 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <div className="text-sm font-medium">Badges</div>
               </a>
             </li>
+
+            {/* Leaderboard */}
+            <li className="flex justify-center">
+              <a
+                href="/books/leaderboard"
+                className="flex flex-col items-center w-full space-y-2 text-gray-300 hover:bg-primary-hover rounded-md p-2">
+                <div>
+                  <BarChart2 />
+                </div>
+                <div className="text-sm font-medium">Leaderboard</div>
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -127,7 +148,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Header */}
       <div
-        className={`fixed top-0 right-0 z-10 w-full bg-secondary h-12 border-b border-background `}>
+        className={`fixed top-0 right-0 z-20 w-full bg-secondary h-12 border-b border-background `}>
         <div className="flex items-center justify-between h-12 px-6">
           <button onClick={toggleMenu}>
             <Menu className="text-primary-foreground" />

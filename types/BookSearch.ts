@@ -189,9 +189,9 @@ export interface UserChallengesExtraDTO {
   pointsAwarded: number;
   userChallengeStartDate: string | null;
   userChallengeEndDate: string | null;
-  status: ActivityAction;
-  dateProgress: DateProgress;
-  additionalInfo: AdditionalChallengeInfo;
+  status?: ActivityAction;
+  dateProgress?: DateProgress;
+  additionalInfo?: AdditionalChallengeInfo;
 }
 
 export interface AdditionalChallengeInfo {
@@ -255,4 +255,9 @@ export interface Achievement {
   description: string;
   threshold: number;
   dateEarned: string;
+}
+
+export interface AddChallenge {
+  clerkId: string;
+  challengeId: number;
 }

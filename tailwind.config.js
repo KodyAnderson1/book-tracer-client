@@ -125,6 +125,9 @@ module.exports = {
               DEFAULT: "#B83227", // Dark Red for dark mode
               foreground: "#ffffff",
             },
+            hr: {
+              DEFAULT: "#ffffff",
+            },
           },
         },
         light: {
@@ -159,6 +162,9 @@ module.exports = {
             danger: {
               DEFAULT: "#E74C3C", // Bright Red for light mode
               foreground: "#ffffff",
+            },
+            hr: {
+              DEFAULT: "#000000",
             },
           },
         },
