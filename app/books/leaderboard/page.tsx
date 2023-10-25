@@ -4,7 +4,7 @@ import { trpc } from "@/app/_trpc/client";
 import { title } from "@/components/primitives";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardBody, CardFooter, CardHeader, Image, Tab, Tabs } from "@nextui-org/react";
-import React from "react";
+import React, { useEffect } from "react";
 
 const mockData = [
   {
@@ -73,13 +73,20 @@ const Leaderboard = () => {
   const { data: points, isLoading } = trpc.getUserPoints.useQuery();
   const [leaderboard, setLeaderboard] = React.useState(mockData);
   const [friendsLeaderboard, setFriendsLeaderboard] = React.useState(mockData.slice(3));
+  const [userPoints, setUserPoints] = React.useState(0);
+
+  useEffect(() => {
+    if (!points) {
+      setUserPoints(0);
+    }
+
+    if (points) {
+      setUserPoints(points);
+    }
+  }, [points]);
 
   if (isLoading) {
     return <div>Loading...</div>;
-  }
-
-  if (!points) {
-    return <div>Something went wrong</div>;
   }
 
   return (
@@ -89,7 +96,7 @@ const Leaderboard = () => {
           Leaderboard
         </h1>
         <h2 className={`${title({ className: "text-text", size: "sm" })} md:text-lg mr-20`}>
-          {points} Points
+          {userPoints} Points
         </h2>
       </header>
       <div className="flex justify-center items-center p-20 -mt-16 md:flex-col">
