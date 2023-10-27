@@ -70,8 +70,6 @@ const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, current
 
       setRewards(sortedRewards);
 
-      // console.log("🚀 ~ file: UpdateButton.tsx:80 ~ onSaved: ~ rewards", rewards);
-
       if (rewards && rewards.length > 0) {
         onOpen();
       }
@@ -137,7 +135,7 @@ const UpdateProgressButton = ({ book, isValueChanged, setIsValueChanged, current
 
       <Button
         startContent={isLoading ? null : <Check />}
-        // isDisabled={!isValueChanged}
+        isDisabled={!isValueChanged}
         isLoading={isLoading}
         color="primary"
         onClick={handleUpdateProgress}

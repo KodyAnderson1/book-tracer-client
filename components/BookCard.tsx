@@ -10,8 +10,6 @@ interface Props {
 }
 
 export function BookCard({ book, setSelectedBook, setIsModalOpen }: Props) {
-  const [isInLibrary, setIsInLibrary] = useState<boolean>(book.inLibrary);
-
   return (
     <div
       className="group relative h-full cursor-pointer w-full"
@@ -39,13 +37,13 @@ export function BookCard({ book, setSelectedBook, setIsModalOpen }: Props) {
           </div>
         </div>
 
-        <div className="gap-2 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute bottom-2 w-full left-0">
+        {/* <div className="gap-2 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute bottom-2 w-full left-0">
           <AddToLibraryButton
             book={book}
             isInLibrary={isInLibrary}
             setIsInLibrary={setIsInLibrary}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

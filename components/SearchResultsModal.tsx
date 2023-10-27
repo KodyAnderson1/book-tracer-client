@@ -10,9 +10,13 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BookRecommendationCard } from "./library/BookRecommendationCard";
 import AddToLibraryButton from "./AddToLibraryButton";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import { trpc } from "@/app/_trpc/client";
+import { customToast } from "@/lib/client/utils";
 
 function readyAmazonLink(searchTerm: string, isISBN13: boolean): string {
   const baseURL = "https://www.amazon.com/s?k=";
@@ -29,7 +33,52 @@ interface BookSearchModelProps {
 }
 
 export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelProps) {
+  const routeSearchParams = useSearchParams();
   const [isInLibrary, setIsInLibrary] = useState<boolean>(book?.inLibrary || false);
+  const [recommendations, setRecommendations] = useState<UserLibraryWithBookDetails[]>([]);
+
+  console.log("BOOOOOOOOK: ", book?.inLibrary);
+
+  const {
+    data: bookResults,
+    isLoading,
+    isError: recommendationError,
+  } = trpc.searchForBooks.useQuery(
+    {
+      searchString: routeSearchParams.get("q") ?? "",
+    },
+    {
+      enabled: false,
+
+      onError: (err) => {
+        customToast(err.message, "error");
+      },
+      onSuccess: (data) => {
+        if (data.length === 0) {
+          customToast("No results found", "info");
+        }
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (!bookResults) return;
+    if (!isOpen) return;
+
+    const initial = bookResults
+      .filter((book) => book.isbn_13 && book.isbn_10)
+      .filter((booky) => !booky.inLibrary && booky.api_id != book?.api_id)
+      .filter((book) => book.ratings_count !== null && book.average_rating !== null)
+      .sort((a, b) => {
+        if (b.ratings_count! - a.ratings_count! !== 0) {
+          return b.ratings_count! - a.ratings_count!;
+        }
+        return b.average_rating! - a.average_rating!;
+      })
+      .slice(0, 5);
+
+    setRecommendations(initial);
+  }, [bookResults, isOpen]);
 
   if (!book) return null;
 
@@ -140,8 +189,12 @@ export function BookSearchModal({ book, isOpen, onOpenChange }: BookSearchModelP
                   </div>
 
                   <div className="hidden md:flex md:flex-row md:gap-5 md:justify-center md:h-[10rem]">
-                    {Array.from({ length: 5 }, (_, i) => (
+                    {/* {Array.from({ length: 5 }, (_, i) => (
                       <BookRecommendationCard key={i} />
+                    ))} */}
+
+                    {recommendations.map((book) => (
+                      <BookRecommendationCard key={book.book_id} book={book} />
                     ))}
                   </div>
                 </div>

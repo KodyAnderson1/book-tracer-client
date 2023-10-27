@@ -4,6 +4,7 @@ import { trpc } from "@/app/_trpc/client";
 import { title } from "@/components/primitives";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardBody, CardFooter, CardHeader, Image, Tab, Tabs } from "@nextui-org/react";
+import { mock } from "node:test";
 import React, { useEffect } from "react";
 
 const mockData = [
@@ -70,10 +71,24 @@ const mockData = [
 ];
 
 const Leaderboard = () => {
-  const { data: points, isLoading } = trpc.getUserPoints.useQuery();
-  const [leaderboard, setLeaderboard] = React.useState(mockData);
   const [friendsLeaderboard, setFriendsLeaderboard] = React.useState(mockData.slice(3));
   const [userPoints, setUserPoints] = React.useState(0);
+  const [firstPlace, setFirstPlace] = React.useState(mockData[0]);
+  const [secondPlace, setSecondPlace] = React.useState(mockData[1]);
+  const [thirdPlace, setThirdPlace] = React.useState(mockData[2]);
+
+  const { data: points, isLoading } = trpc.getUserPoints.useQuery();
+  const { data: leaderboard, isLoading: isLeaderboardLoading } = trpc.getLeaderboard.useQuery(
+    undefined,
+    {
+      staleTime: 1000 * 60 * 5,
+      onSuccess: (data) => {
+        setFirstPlace(data[0] || mockData[0]);
+        setSecondPlace(data[1] || mockData[1]);
+        setThirdPlace(data[2] || mockData[2]);
+      },
+    }
+  );
 
   useEffect(() => {
     if (!points) {
@@ -85,7 +100,7 @@ const Leaderboard = () => {
     }
   }, [points]);
 
-  if (isLoading) {
+  if (isLoading || isLeaderboardLoading) {
     return <div>Loading...</div>;
   }
 
@@ -105,15 +120,15 @@ const Leaderboard = () => {
             <div className="flex justify-between items-end">
               <div className="flex flex-col items-center relative">
                 {/* Rank 2 (on the left) */}
-                {renderTop(leaderboard[1], 1)}
+                {renderTop(secondPlace, 1)}
               </div>
               <div className="flex flex-col items-center relative">
                 {/* Rank 1 (in the center) */}
-                {renderTop(leaderboard[0], 0)}
+                {renderTop(firstPlace, 0)}
               </div>
               <div className="flex flex-col items-center relative">
                 {/* Rank 3 (on the right) */}
-                {renderTop(leaderboard[2], 2)}
+                {renderTop(thirdPlace, 2)}
               </div>
             </div>
           </CardHeader>
@@ -132,28 +147,29 @@ const Leaderboard = () => {
                     </tr>
                   </thead>
                   <tbody className="">
-                    {leaderboard.slice(3).map((data, index) => (
-                      <tr key={data.rank} className={index % 2 === 0 ? "bg-background-card" : ""}>
-                        <td className=" py-4">
-                          <div className="rounded-full text-secondary font-semibold w-4 h-8 flex items-center justify-center pl-5">
-                            {data.rank}
-                          </div>
-                        </td>
-                        <td className=" py-4">
-                          <div className="flex items-center">
-                            <Image
-                              src={data.avatarUrl}
-                              alt={data.displayName}
-                              width={50}
-                              height={50}
-                              className="rounded-full flex items-center justify-center"
-                            />
-                            <span className=" ml-2">{data.displayName}</span>
-                          </div>
-                        </td>
-                        <td className=" py-4">{data.points}</td>
-                      </tr>
-                    ))}
+                    {leaderboard &&
+                      leaderboard.slice(3).map((data, index) => (
+                        <tr key={data.rank} className={index % 2 === 0 ? "bg-background-card" : ""}>
+                          <td className=" py-4">
+                            <div className="rounded-full text-secondary font-semibold w-4 h-8 flex items-center justify-center pl-5">
+                              {data.rank}
+                            </div>
+                          </td>
+                          <td className=" py-4">
+                            <div className="flex items-center">
+                              <Image
+                                src={data.avatarUrl}
+                                alt={data.displayName}
+                                width={50}
+                                height={50}
+                                className="rounded-full flex items-center justify-center"
+                              />
+                              <span className=" ml-2">{data.displayName}</span>
+                            </div>
+                          </td>
+                          <td className=" py-4">{data.points}</td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </CardBody>

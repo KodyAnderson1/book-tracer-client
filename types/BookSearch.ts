@@ -57,15 +57,15 @@ export interface UserLibraryWithBookDetails {
   book_id: string;
   api_id: string;
   title: string;
-  author: string[];
+  author: string[] | null;
   publisher: string;
   published_date: string;
-  description: string;
+  description: string | null;
   isbn_10: string | null;
   isbn_13: string | null;
   page_count: number | null;
   print_type: string | null;
-  categories: string[];
+  categories: string[] | null;
   average_rating: number | null;
   ratings_count: number | null;
   maturity_rating: string | null;
@@ -260,4 +260,27 @@ export interface Achievement {
 export interface AddChallenge {
   clerkId: string;
   challengeId: number;
+}
+
+export interface SingleBookStats {
+  status: Status;
+  bookStats: BookStats[] | [];
+}
+
+export interface BookStats {
+  pagesRead: number;
+  dateRead: string;
+}
+
+export interface LineChartStats {
+  date: string;
+  pagesRead: number;
+}
+
+export interface LeaderboardUser {
+  clerkId: string;
+  displayName: string;
+  avatarUrl: string;
+  points: number;
+  rank: number;
 }

@@ -1,4 +1,4 @@
-import { UserLibraryWithBookDetails } from "@/types/BookSearch";
+import { BookStats, LineChartStats, UserLibraryWithBookDetails } from "@/types/BookSearch";
 import { readyAmazonLink } from "@/lib/utils";
 import { Link } from "@nextui-org/link";
 import {
@@ -14,7 +14,18 @@ import {
 import AddToLibraryButton from "../AddToLibraryButton";
 import UpdateProgressButton from "./UpdateButton";
 import { Slider } from "../ui/slider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { trpc } from "@/app/_trpc/client";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -23,6 +34,48 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
   );
   const [isValueChanged, setIsValueChanged] = useState<boolean>(false);
   const [isInLibrary, setIsInLibrary] = useState<boolean>(book?.inLibrary || false);
+  const [displayStats, setDisplayStats] = useState<LineChartStats[] | undefined>(undefined);
+
+  const {
+    data: bookStats,
+    isLoading: isLoadingBookStats,
+    isError: isErrorBookStats,
+  } = trpc.getSingleBookStats.useQuery(book.api_id, {
+    enabled: isOpen && book.reading_status === "IN_PROGRESS",
+    cacheTime: 60 * 2000,
+    refetchInterval: 60 * 2000,
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (!bookStats) return;
+
+    if (bookStats?.status.statusCode === "1") {
+      setDisplayStats(undefined);
+    } else {
+      const stats = bookStats.bookStats
+        .map((stat) => {
+          return {
+            date: new Date(stat.dateRead),
+            pagesRead: stat.pagesRead,
+          };
+        })
+        .sort((a: any, b: any) => a.date - b.date)
+        .map((sortedStat) => {
+          const dateWithoutYear = sortedStat.date
+            .toLocaleDateString()
+            .split("/")
+            .slice(0, 2)
+            .join("/");
+          return {
+            date: dateWithoutYear,
+            pagesRead: sortedStat.pagesRead,
+          };
+        });
+
+      setDisplayStats(stats);
+    }
+  }, [bookStats]);
 
   const handleValueChange = (value: number) => {
     setPageRead([value]);
@@ -56,6 +109,9 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
               </p>
               <p className="text-xs text-opacity-70 text-background-foreground italic">
                 Avg Rating: {book.average_rating}/5
+              </p>
+              <p className="text-xs text-opacity-70 text-background-foreground italic">
+                {book.api_id}
               </p>
             </div>
           </div>
@@ -147,7 +203,7 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
                       </div>
                     </div>
 
-                    <div className="text-sm md:my-2 h-[10rem] md:h-[13rem] overflow-y-auto">
+                    <div className="text-sm md:my-2 h-[8rem] overflow-y-auto">
                       {book.description || "No Description Found"}
                     </div>
                   </div>
@@ -156,15 +212,30 @@ const LibraryBookCard = ({ book }: { book: UserLibraryWithBookDetails }) => {
 
                   <div className="hidden md:block md:flex-grow md:w-full">
                     <div className="mb-2">
-                      <span className="text-lg font-bold text-background-foreground">
-                        Statistics
-                      </span>
-                    </div>
-
-                    <div className="hidden md:flex md:flex-row md:gap-5 md:justify-center md:h-[10rem]">
-                      {/* {Array.from({ length: 5 }, (_, i) => (
-                        <BookRecommendationCard key={i} />
-                      ))} */}
+                      <div className="text-lg font-bold text-background-foreground">Statistics</div>
+                      <div className="w-[700px] h-[250px]">
+                        {bookStats?.status.statusCode === "1" ? (
+                          <div className="text-background-foreground text-center align-middle">
+                            {bookStats?.status.statusDescription}
+                          </div>
+                        ) : displayStats === undefined ? (
+                          <div>
+                            {bookStats?.status.statusDescription ||
+                              "Read this book for at least 3 days to gain some insights!"}
+                          </div>
+                        ) : (
+                          <ResponsiveContainer width={740} height="100%">
+                            <LineChart data={displayStats} className="-ml-10 mt-4">
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="date" />
+                              <YAxis />
+                              <Tooltip />
+                              <Legend />
+                              <Line type="monotone" dataKey="pagesRead" stroke="#8884d8" />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

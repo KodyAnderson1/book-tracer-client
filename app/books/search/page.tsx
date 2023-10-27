@@ -11,7 +11,6 @@ import { customToast } from "@/lib/client/utils";
 
 export default function Home() {
   const routeSearchParams = useSearchParams();
-
   const [isQueryEnabled, setQueryEnabled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<UserLibraryWithBookDetails | null>(null);
@@ -36,19 +35,19 @@ export default function Home() {
   );
 
   useEffect(() => {
-    if (!routeSearchParams.get("q")) {
-      // console.log("No search query");
-      return;
-    }
+    if (!routeSearchParams.get("q")) return;
 
-    // console.log("searching for books");
     setQueryEnabled(true);
-    return () => setQueryEnabled(false); // cleanup
+    return () => setQueryEnabled(false);
   }, [routeSearchParams]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
+  function setBook(book: UserLibraryWithBookDetails) {
+    setSelectedBook(() => book);
+  }
 
   if (isLoading) {
     return (
@@ -92,12 +91,7 @@ export default function Home() {
         </h1>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-5 gap-4">
-        {/* Filters section */}
-        {/* <div className="border-1 border-secondary p-4 rounded mb-4 md:mb-0 md:col-span-4">
-          <h3 className="text-center font-semibold text-lg mb-4">Filters</h3>
-        </div> */}
-
+      <div className="px-28">
         {/* Books section */}
         <main className="flex-1 mb-4 md:mb-0 md:col-span-4 md:row-span-5">
           <h2 className="hidden">Books</h2>
@@ -107,51 +101,13 @@ export default function Home() {
                 <BookCard
                   key={book.book_id}
                   book={book}
-                  setSelectedBook={setSelectedBook}
+                  setSelectedBook={setBook}
                   setIsModalOpen={setIsModalOpen}
                 />
               ))}
           </div>
         </main>
-
-        {/* You might also like section */}
-        <aside className="sticky top-20 h-[40rem] border-1 border-secondary p-4 rounded md:col-start-5 md:row-span-5">
-          <h3 className="text-center font-semibold text-sm mb-4">
-            Check out what your frienda are reading!
-          </h3>
-          <div className="flex flex-col gap-4 justify-center">
-            {/* {Array.from({ length: 3 }, (_, i) => (
-              <BookRecommendationCard key={i} />
-            ))} */}
-          </div>
-        </aside>
       </div>
-
-      {/* <div className="md:grid md:grid-cols-3 md:grid-rows-1 md:gap-4">
-        <div className="border-1 border-secondary p-4 rounded mb-4 md:mb-0 md:col-span-2 md:row-span-1">
-          <h3 className="text-center font-semibold text-lg mb-4">Filters</h3>
-        </div>
-
-        <aside className="md:w-full md:col-start-3 md:row-span-2">
-          <div className="border-1 border-secondary p-4 rounded">
-            <h3 className="text-center font-semibold text-lg mb-4">You might also like...</h3>
-          </div>
-        </aside>
-
-        <main className="flex-1 md:col-span-2 md:row-span-1">
-          <h2 className="hidden">Books</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-            {books.map((book) => (
-              <BookCard
-                key={book.id}
-                book={book}
-                setSelectedBook={setSelectedBook}
-                setIsModalOpen={setIsModalOpen}
-              />
-            ))}
-          </div>
-        </main>
-      </div> */}
 
       {selectedBook && (
         <BookSearchModal isOpen={isModalOpen} onOpenChange={handleCloseModal} book={selectedBook} />

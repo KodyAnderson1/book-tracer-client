@@ -60,15 +60,15 @@ export const UserLibraryWithBookDetailsSchema = z.object({
   book_id: z.string(),
   api_id: z.string(),
   title: z.string(),
-  author: z.array(z.string()),
+  author: z.array(z.string()).nullable(),
   publisher: z.string(),
   published_date: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   isbn_10: z.string().nullable(),
   isbn_13: z.string().nullable(),
   page_count: z.number().nullable(),
   print_type: z.string().nullable(),
-  categories: z.array(z.string()),
+  categories: z.array(z.string()).nullable(),
   average_rating: z.number().nullable(),
   ratings_count: z.number().nullable(),
   maturity_rating: z.string().nullable(),
@@ -262,3 +262,5 @@ export const AddChallengeSchema = z.object({
   challengeId: z.number(),
   clerkId: z.string(),
 });
+
+export const SingleBookStatsSchema = z.string();

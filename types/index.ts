@@ -36,6 +36,8 @@ export type EndpointFunctionsServer = {
   GET_CHALLENGES: () => string;
   GET_LATEST_ACHIEVEMENTS: () => string;
   GET_POINTS: () => string;
+  GET_SINGLE_BOOK_STATS: () => string;
+  GET_LEADERBOARD: () => string;
 };
 
 export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
@@ -52,4 +54,6 @@ export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
   GET_CHALLENGES: () => `/gamification/challenge`,
   GET_LATEST_ACHIEVEMENTS: () => `/gamification/achievements`,
   GET_POINTS: () => `/gamification/points`,
+  GET_SINGLE_BOOK_STATS: () => `/gamification/stats/singlebook`,
+  GET_LEADERBOARD: () => `/gamification/leaderboard`,
 };

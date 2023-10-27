@@ -7,7 +7,9 @@ import {
   Badge,
   BadgeResponse,
   CustomUser,
+  LeaderboardUser,
   SaveBookResponse,
+  SingleBookStats,
   Status,
   UpdateProgress,
   UserChallengesExtraDTO,
@@ -17,6 +19,7 @@ import {
   AddChallengeSchema,
   CustomUserSchema,
   SearchSchema,
+  SingleBookStatsSchema,
   UpdateProgressSchema,
   UserLibraryWithBookDetailsSchema,
 } from "@/types/zodSchemas";
@@ -244,6 +247,40 @@ export const appRouter = router({
       .get()
       .setToken(getJWTToken(realToken))
       .setEndpoint(AGGREGATE_SERVICE.GET_POINTS)
+      .execute();
+
+    return variable.data;
+  }),
+
+  getSingleBookStats: protectedProcedure
+    .input(SingleBookStatsSchema)
+    .query(async ({ ctx, input }) => {
+      const { userId, auth, token } = ctx;
+      const realToken = await token;
+
+      if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      const variable = await new APIBuilder<any, SingleBookStats>(SERVICE)
+        .get()
+        .setToken(getJWTToken(realToken))
+        .setEndpoint(AGGREGATE_SERVICE.GET_SINGLE_BOOK_STATS)
+        .setQueryParameters({ book_id: input })
+        .execute();
+
+      return variable.data;
+    }),
+
+  getLeaderboard: protectedProcedure.query(async ({ ctx }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    const variable = await new APIBuilder<any, LeaderboardUser[]>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_LEADERBOARD)
+
       .execute();
 
     return variable.data;

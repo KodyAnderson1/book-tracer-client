@@ -1,22 +1,20 @@
-import { Button } from "@nextui-org/button";
+import { UserLibraryWithBookDetails } from "@/types/BookSearch";
 import { Card, CardFooter, Image } from "@nextui-org/react";
 
-export function BookRecommendationCard() {
+export function BookRecommendationCard({ book }: { book: UserLibraryWithBookDetails }) {
   return (
-    <Card
-      className="relative group hover:bg-gray-100 transition w-[7rem] h-[10rem]"
-      isPressable
-      onPress={() => console.log("Other Books Like This Click...")}>
+    <Card>
       <Image
-        alt="Card background"
-        className="object-cover"
-        src="https://books.google.com/books/content?id=1PgKPuFIz1kC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
+        alt={book.title}
+        height={300}
+        width={300}
+        src={book.small_thumbnail || book.thumbnail || "/images/placeholder.png"}
       />
-      <CardFooter className="absolute -bottom-1 z-10 justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* <CardFooter className="absolute -bottom-1 z-10 justify-between opacity-0 group-hover:opacity-100 transition-opacity">
         <Button className="text-tiny w-full" color="primary" radius="full" size="sm">
           BUILDING...
         </Button>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 }

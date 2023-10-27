@@ -17,15 +17,9 @@ const Library = () => {
   const { user, isLoaded, isSignedIn } = useUser();
 
   const { mutate: saveNewUser, isLoading } = trpc.addNewUser.useMutation({
-    onSuccess: () => {
-      // stuff
-    },
     onError: (err) => {
       console.error(err);
       customToast("Uh oh! Looks like there was an error loading your profile", "error");
-    },
-    onSettled: () => {
-      // setIsLoading(false);
     },
   });
 

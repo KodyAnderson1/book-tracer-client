@@ -15,10 +15,20 @@ interface Props {
 }
 
 const AddToLibraryButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
-  return isInLibrary ? (
-    <RemoveButton book={book} isInLibrary={isInLibrary} setIsInLibrary={setIsInLibrary} />
+  const [isInLibraryState, setIsInLibraryState] = React.useState<boolean>(book?.inLibrary);
+
+  return isInLibraryState ? (
+    <RemoveButton
+      book={book}
+      isInLibrary={book?.inLibrary || isInLibrary}
+      setIsInLibrary={setIsInLibraryState}
+    />
   ) : (
-    <AddButton book={book} isInLibrary={isInLibrary} setIsInLibrary={setIsInLibrary} />
+    <AddButton
+      book={book}
+      isInLibrary={book?.inLibrary || isInLibrary}
+      setIsInLibrary={setIsInLibraryState}
+    />
   );
 };
 
@@ -33,10 +43,8 @@ const RemoveButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
     },
     onError: (err: any) => {
       console.error(err);
-      customToast(
-        "Uh oh! The book did not get removed from your library! Try again later",
-        "error"
-      );
+      setIsInLibrary(true);
+      customToast("The book did not get removed from your library! Try again later", "error");
     },
     onSettled: () => {
       // setIsLoading(false);
@@ -44,7 +52,6 @@ const RemoveButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
   });
 
   function handleRemoveFromLibrary(book: UserLibraryWithBookDetails) {
-    // console.log("removing book from library");
     book.inLibrary = false;
     removeBook(book);
     setIsConfirming(false);
@@ -55,12 +62,7 @@ const RemoveButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
       handleRemoveFromLibrary(book);
       return;
     }
-
-    // console.log("confirming removal from library");
     setIsConfirming(true);
-
-    // book.inLibrary = false;
-    // removeBook(book);
   }
 
   const IconToDisplay = () => {
@@ -97,7 +99,7 @@ const AddButton = ({ book, isInLibrary, setIsInLibrary }: Props) => {
     },
     onError: (err: any) => {
       console.error(err);
-
+      setIsInLibrary(false);
       customToast("Uh oh! The book did not get added to your library!", "error");
     },
     onSettled: () => {
