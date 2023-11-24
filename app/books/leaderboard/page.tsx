@@ -3,8 +3,7 @@
 import { trpc } from "@/app/_trpc/client";
 import { title } from "@/components/primitives";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardBody, CardFooter, CardHeader, Image, Tab, Tabs } from "@nextui-org/react";
-import { mock } from "node:test";
+import { Card, CardBody, CardHeader, Image, Tab, Tabs } from "@nextui-org/react";
 import React, { useEffect } from "react";
 
 const mockData = [
@@ -89,6 +88,13 @@ const Leaderboard = () => {
       },
     }
   );
+
+  const { data: friendsData } = trpc.getFriendsLeaderboard.useQuery(undefined, {
+    staleTime: 1000 * 60 * 5,
+    onSuccess: (data) => {
+      setFriendsLeaderboard(data);
+    },
+  });
 
   useEffect(() => {
     if (!points) {
@@ -189,7 +195,7 @@ const Leaderboard = () => {
                       <tr key={data.rank} className={index % 2 === 0 ? "bg-background-card" : ""}>
                         <td className="py-4">
                           <div className="rounded-full text-secondary font-semibold w-4 h-8 flex items-center justify-center pl-5">
-                            {data.rank - 3}
+                            {data.rank}
                           </div>
                         </td>
                         <td className=" py-4">

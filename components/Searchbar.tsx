@@ -1,4 +1,3 @@
-import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Kbd } from "@nextui-org/kbd";
 import { Divider, Modal, ModalBody, ModalContent, useDisclosure } from "@nextui-org/react";
@@ -10,7 +9,6 @@ interface Props {
   setNavbarMenuChange: (e: boolean) => void;
   navbarMenuChange: boolean;
   recentSearches: string[];
-
   setSearches: (searchTerm: string) => void;
 }
 

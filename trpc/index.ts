@@ -10,6 +10,8 @@ import {
   LeaderboardUser,
   SaveBookResponse,
   SingleBookStats,
+  SmallUser,
+  SmallUserBook,
   Status,
   UpdateProgress,
   UserChallengesExtraDTO,
@@ -17,16 +19,17 @@ import {
 } from "@/types/BookSearch";
 import {
   AddChallengeSchema,
+  AddFriendRequestSchema,
   CustomUserSchema,
   SearchSchema,
   SingleBookStatsSchema,
   UpdateProgressSchema,
   UserLibraryWithBookDetailsSchema,
+  updateFriendRequestSchema,
 } from "@/types/zodSchemas";
 import { TRPCError } from "@trpc/server";
 import { getJWTToken } from "@/lib/utils";
 import { APIErrorHandler, ErrorResponse } from "@/lib/server/APIErrorHandler";
-import { MOCK_RETURN_DATA } from "@/lib/client/MockData";
 
 const SERVICE = process.env.AGGREGATE_SERVICE || "";
 
@@ -281,6 +284,122 @@ export const appRouter = router({
       .setToken(getJWTToken(realToken))
       .setEndpoint(AGGREGATE_SERVICE.GET_LEADERBOARD)
 
+      .execute();
+
+    return variable.data;
+  }),
+
+  getAllUsersForFriends: protectedProcedure.query(async ({ ctx }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    const variable = await new APIBuilder<any, CustomUser[]>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_USERS_FOR_FRIENDS)
+      .setQueryParameters({ clerk_id: userId })
+      .execute();
+
+    return variable.data.map((item: CustomUser) => {
+      const firstLast = item ? `${item.firstName} ${item.lastName}` : null;
+      const username = item.username ? item.username : item.clerkId;
+      const displayName = firstLast ?? username;
+
+      const imageUrl = item.imageUrl ?? "https://i.pravatar.cc/300";
+
+      return {
+        clerkId: item.clerkId,
+        displayName,
+        avatarUrl: imageUrl,
+      };
+    }) as SmallUser[];
+  }),
+
+  getPendingFriendsRequests: protectedProcedure.query(async ({ ctx }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    const variable = await new APIBuilder<any, SmallUser[]>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_FRIEND_REQUESTS)
+      .execute();
+
+    return variable.data;
+  }),
+
+  getFriendsBooks: protectedProcedure.query(async ({ ctx }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    const variable = await new APIBuilder<any, SmallUserBook[]>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_FRIEND_BOOKS)
+      .setQueryParameters({ clerkId: userId })
+      .execute();
+
+    return variable.data;
+  }),
+
+  updateFriendRequest: protectedProcedure
+    .input(updateFriendRequestSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { userId, auth, token } = ctx;
+      const realToken = await token;
+
+      if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      const variable = await new APIBuilder<any, UserChallengesExtraDTO[]>(SERVICE)
+        .put({
+          clerkId: userId,
+          friendId: input.friendId,
+          status: input.status,
+        })
+        .setToken(getJWTToken(realToken))
+        .setEndpoint(AGGREGATE_SERVICE.UPDATE_FRIEND_REQUEST)
+        .execute();
+
+      return variable.data;
+    }),
+
+  addFriend: protectedProcedure.input(AddFriendRequestSchema).mutation(async ({ ctx, input }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    console.log("Inside addFriend mutation");
+    console.log(input);
+
+    const variable = await new APIBuilder<any, UserChallengesExtraDTO[]>(SERVICE)
+      .post({
+        requestingClerkId: userId,
+        friendToAddClerkId: input.friendToAddClerkId,
+      })
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.ADD_FRIEND)
+      .execute();
+
+    return variable.data;
+  }),
+
+  getFriendsLeaderboard: protectedProcedure.query(async ({ ctx }) => {
+    const { userId, auth, token } = ctx;
+    const realToken = await token;
+
+    if (!realToken) throw new TRPCError({ code: "UNAUTHORIZED" });
+    const variable = await new APIBuilder<any, LeaderboardUser[]>(SERVICE)
+      .get()
+      .setToken(getJWTToken(realToken))
+      .setEndpoint(AGGREGATE_SERVICE.GET_FRIENDS_LEADERBOARD)
+      .setQueryParameters({ clerk_id: userId })
       .execute();
 
     return variable.data;

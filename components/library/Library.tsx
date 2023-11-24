@@ -71,7 +71,7 @@ const Library = () => {
   }
 
   return (
-    <section className="flex flex-col px-4 md:px-0">
+    <section className="flex flex-col px-4 md:px-8">
       <header>
         <h1 className={title({ className: "text-background-foreground", size: "sm" })}>
           Your Library
@@ -83,22 +83,19 @@ const Library = () => {
       </header>
 
       <div className="flex flex-col lg:flex-row w-full ">
-        <div className="flex-grow p-4 w-full lg:w-[60%] xl:w-[70%] 2xl:w-[70%] min-h-[100vh]">
+        <div className="flex-grow p-4 w-full lg:w-[60%] min-h-[98vh]">
           <div className="flex w-full flex-col">
             <LibraryTabs />
           </div>
         </div>
 
-        <div className="flex flex-col w-full lg:w-[40%] xl:w-[30%] 2xl:w-[20%] lg:space-y-2 lg:space-x-0 pt-4 lg:pt-0 px-4 space-y-4 max-h-[57rem]">
-          <div className="flex flex-col bg-background-card border border-background-foreground pt-2 px-4 h-1/4 rounded overflow-y-auto pb-3 lg:pb-0">
+        <div className="flex flex-col w-full lg:w-[40%] xl:w-[30%] 2xl:w-[23%] lg:space-y-2 lg:space-x-0 pt-4 lg:pt-0 px-4 space-y-4  max-h-[57rem]">
+          <div className="flex flex-col bg-background-card border border-background-foreground pt-2 px-4 h-1/3 rounded overflow-y-auto pb-3 lg:pb-0">
             <FriendCard />
           </div>
 
-          <div className="flex flex-col bg-background-card border border-background-foreground pt-2 px-4 h-1/4 rounded overflow-y-auto pb-3 lg:pb-0">
-            <AchievementCard />
-          </div>
           <div className="flex flex-col bg-background-card border border-background-foreground pt-2 px-4 h-1/3 rounded overflow-y-auto pb-3 lg:pb-0">
-            <StatisticsCard />
+            <AchievementCard />
           </div>
         </div>
       </div>

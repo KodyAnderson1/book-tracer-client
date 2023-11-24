@@ -38,6 +38,12 @@ export type EndpointFunctionsServer = {
   GET_POINTS: () => string;
   GET_SINGLE_BOOK_STATS: () => string;
   GET_LEADERBOARD: () => string;
+  GET_USERS_FOR_FRIENDS: () => string;
+  GET_FRIEND_BOOKS: () => string;
+  GET_FRIEND_REQUESTS: () => string;
+  UPDATE_FRIEND_REQUEST: () => string;
+  ADD_FRIEND: () => string;
+  GET_FRIENDS_LEADERBOARD: () => string;
 };
 
 export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
@@ -56,4 +62,10 @@ export const AGGREGATE_SERVICE: EndpointFunctionsServer = {
   GET_POINTS: () => `/gamification/points`,
   GET_SINGLE_BOOK_STATS: () => `/gamification/stats/singlebook`,
   GET_LEADERBOARD: () => `/gamification/leaderboard`,
+  GET_USERS_FOR_FRIENDS: () => `/users/getUsers/`,
+  GET_FRIEND_BOOKS: () => `/users/retrieveFriends`,
+  GET_FRIEND_REQUESTS: () => `/users/friends/pending`,
+  UPDATE_FRIEND_REQUEST: () => `/users/updateFriends`,
+  ADD_FRIEND: () => `/users/addFriends`,
+  GET_FRIENDS_LEADERBOARD: () => `/gamification/leaderboard/friends/`,
 };

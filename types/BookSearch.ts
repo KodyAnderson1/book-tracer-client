@@ -277,10 +277,39 @@ export interface LineChartStats {
   pagesRead: number;
 }
 
+export interface SmallUser {
+  clerkId: string;
+  displayName: string;
+  avatarUrl: string;
+}
+
+export interface SmallUserBook {
+  username: string;
+  firstName: string;
+  lastName: string;
+  clerkId: string;
+  imageUrl: string;
+  lastBookId: string;
+  lastBookTitle: string;
+  lastBookUpdated: string;
+}
+
 export interface LeaderboardUser {
   clerkId: string;
   displayName: string;
   avatarUrl: string;
   points: number;
   rank: number;
+}
+
+export interface UpdateFriendRequest {
+  clerkId: string;
+  friendId: string;
+  status: "CONFIRMED" | "PENDING" | "BLOCKED" | "DECLINED";
+}
+
+export interface AddFriendRequest {
+  requestingClerkId: string;
+  friendToAddClerkId: string;
+  successString?: string;
 }

@@ -264,3 +264,15 @@ export const AddChallengeSchema = z.object({
 });
 
 export const SingleBookStatsSchema = z.string();
+
+export const updateFriendRequestSchema = z.object({
+  clerkId: z.string().nullable(),
+  friendId: z.string(),
+  status: z.enum(["CONFIRMED", "DECLINED", "BLOCKED", "PENDING"]),
+});
+
+export const AddFriendRequestSchema = z.object({
+  requestingClerkId: z.string(),
+  friendToAddClerkId: z.string(),
+  successString: z.string(),
+});
